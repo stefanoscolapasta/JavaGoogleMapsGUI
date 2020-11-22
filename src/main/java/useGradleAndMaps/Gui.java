@@ -103,11 +103,7 @@ public class Gui {
         this.pMain.add(this.pTextPanel, BorderLayout.NORTH);
         this.pMain.add(this.pSearchPanel, BorderLayout.CENTER);  
         this.frame.add(this.pMain);
-        //Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        //Input input = new Input("Json filer");
-        //System.out.println(obj.getString("Mountain View").toString());
-//        System.out.println(directions.routes[0].legs[0].duration);
-//        System.out.println(directions.routes[0].legs[0].distance.humanReadable);
+        
     }
     
     private void showMapsError(String message) {
