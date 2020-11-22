@@ -1,9 +1,32 @@
 package useGradleAndMaps;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+
+
 public class ApiKey {
-    private final String key = "AIzaSyBHTpOwayS7AM6rZvmRFi8S6e3RUieFvZg";
+    private String key = "Default";
+    private static final String FILE_NAME = "D:\\Stefano\\Documents\\"
+                                            + "Universita\\Anni-Scolastici\\"
+                                            + "SECONDO ANNO\\Corsi\\"
+                                            + "Programmazione ad Oggetti\\"
+                                            + "EclipseWorkSpace\\useGradleAndMaps\\"
+                                            + "ApiKey\\key.txt";
+    
+    public ApiKey() throws UnsupportedEncodingException, FileNotFoundException, IOException {
+        try(final BufferedReader r = new BufferedReader(
+                new InputStreamReader(
+                        new FileInputStream(ApiKey.FILE_NAME), "UTF-8"))){
+            this.key = r.readLine();
+        };
+    }
     
     public String getApiKey() {
         return this.key;
     }
 }
+

@@ -7,10 +7,8 @@ import com.google.maps.errors.ApiException;
 
 import java.io.IOException;
 
-import org.json.*;
-
 public class UseMaps {
-    public static void main(String[] args) throws ApiException, InterruptedException, JSONException, IOException {
+    public static void main(String[] args) throws ApiException, InterruptedException, IOException {
         new Gui();   
     }
 }
