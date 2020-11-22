@@ -65,6 +65,7 @@ public class MapsHandlerRequest{
         //GeocodingResult[] results = GeocodingApi.geocode(this.context, "44.142986, 12.240852").await();
         GeocodingResult[] coord = GeocodingApi.geocode(context, origin).await();
         LatLng locationLatLang = coord[0].geometry.location;
+        System.out.println("YOUR LOCATION--->" + locationLatLang);
         PlacesSearchResponse req = new NearbySearchRequest(context)
                 .location(locationLatLang)
                 .radius(radius*MapsHandlerRequest.FROM_M_TOKM)
