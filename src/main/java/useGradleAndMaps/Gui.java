@@ -17,6 +17,7 @@ import javax.swing.border.TitledBorder;
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
+import com.google.maps.ImageResult;
 import com.google.maps.errors.ApiException;
 import com.google.maps.errors.InvalidRequestException;
 import com.google.maps.errors.NotFoundException;
@@ -24,6 +25,10 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResult;
+import de.westnordost.osmapi.*;
+import de.westnordost.osmapi.map.MapDataDao;
+import de.westnordost.osmapi.map.data.BoundingBox;
+import de.westnordost.osmapi.map.handler.DefaultMapDataHandler;
 
 public class Gui {
     private final MyFrame frame; 
@@ -40,6 +45,7 @@ public class Gui {
     
     public Gui() throws ApiException, InterruptedException, IOException {
         this.mapsHandler = new MapsHandlerRequest();
+       
         this.frame = new MyFrame("Maps");
         this.drawLocations = new DrawLocationsPanel();
         this.pMain = new JPanel(new BorderLayout());
@@ -49,7 +55,7 @@ public class Gui {
         
         this.pResult = new JTextArea();
         this.pResult.setSize(10, 2);
-        this.pTextPanel.setBorder(new TitledBorder("Select origin and destination"));
+        this.pTextPanel.setBorder(new TitledBorder("Select starting point and locations of interest"));
         
         JPanel pOriginPanel = new JPanel(new BorderLayout());
         pOriginPanel.setBorder(new TitledBorder("Select Origin here"));
@@ -81,7 +87,8 @@ public class Gui {
                             Integer.valueOf(Gui.this.tDistance.getText())
                             );
                     System.out.println("CHECCKA1 QUI-->" + results.first);
-                    Gui.this.drawLocations.setResults(results);  
+                    ImageResult geoImageRes = Gui.this.mapsHandler.getGeoImageAtCoordinates(results.second);
+                    Gui.this.drawLocations.setResults(results, geoImageRes);  
                     System.out.println("CHECCKA2 QUI-->" + results.first);
                     
                     Gui.this.drawLocations.repaint();

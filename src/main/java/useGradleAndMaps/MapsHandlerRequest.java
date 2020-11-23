@@ -1,6 +1,5 @@
 package useGradleAndMaps;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +7,11 @@ import java.util.NoSuchElementException;
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
+import com.google.maps.ImageResult;
 import com.google.maps.NearbySearchRequest;
+import com.google.maps.StaticMapsApi;
+import com.google.maps.StaticMapsRequest.Markers;
+import com.google.maps.StaticMapsRequest.StaticMapType;
 import com.google.maps.errors.ApiException;
 import com.google.maps.errors.NotFoundException;
 import com.google.maps.model.DirectionsResult;
@@ -16,6 +19,7 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.PlacesSearchResult;
+import com.google.maps.model.Size;
 import com.google.maps.model.TravelMode;
 
 public class MapsHandlerRequest{
@@ -47,7 +51,8 @@ public class MapsHandlerRequest{
         }
         DirectionsResult directions = DirectionsApi
                 .getDirections(context, origin, destination)
-                .mode(TravelMode.WALKING).await();
+                .mode(TravelMode.WALKING)
+                .await();
         return String.valueOf(directions.routes[0].legs[0].duration.humanReadable);
     }
     
@@ -65,6 +70,17 @@ public class MapsHandlerRequest{
                 .await();
         List<PlacesSearchResult> results = Arrays.asList(req.results);
         return new Pair<>(results, locationLatLang);
+    }
+    
+    public ImageResult getGeoImageAtCoordinates(LatLng locationLatLang) throws ApiException, InterruptedException, IOException {
+        return StaticMapsApi
+                .newRequest(context, new Size(1920, 1080))
+                .center(locationLatLang)
+                .zoom(15)
+                .scale(2)
+                .maptype(StaticMapType.satellite)
+                .markers(null)
+                .await();
     }
     
 }
