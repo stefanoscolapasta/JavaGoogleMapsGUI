@@ -26,7 +26,7 @@ public class DrawLocationsPanel extends JPanel {
     private List<PlacesSearchResult> results = new ArrayList<>();
     private Point myCoordinates;
     private static final int RADIUS = 10;
-    private static final int PROPORTIONAL_MULTIPLIER = 10_000_000 / 90 / 4;
+    private static final int PROPORTIONAL_MULTIPLIER = 1_000_000 / 90;
     private Point CentralPoint;
     private final static Color DEFAULT_NODE_COLOR = Color.RED;
     private final static Color DEFAULT_LINE_COLOR = Color.ORANGE;
@@ -34,6 +34,8 @@ public class DrawLocationsPanel extends JPanel {
     private ImageIcon backgroundImage = new ImageIcon();
     
     
+    
+    private LatLng myPosition;
     private final double widthInMeter = (40_000/Math.pow(2,  15)) * 2 * 1_000;
     private final double heightInMeter = (40_000/Math.pow(2,  15)) * 2 * 1_000;
     
@@ -41,6 +43,7 @@ public class DrawLocationsPanel extends JPanel {
         this.results = results.first;
         this.myCoordinates = this.transformedCoordinates(results.second); 
         this.backgroundImage = new ImageIcon(geoImageRes.imageData);
+        this.myPosition = results.second;
     }
     
     public void paint(final Graphics g) {
@@ -55,13 +58,12 @@ public class DrawLocationsPanel extends JPanel {
                 this.getSize()
                 );
         
-
         
-        final double realWidthPerPixel = this.widthInMeter / (double)scaledImageDimension.width;
-        final double realHeightPerPixel = this.heightInMeter / (double)scaledImageDimension.height;
+        final double realWidthInMeterPerPixel = this.widthInMeter / (double)scaledImageDimension.width;
+        final double realHeightInMeterPerPixel = this.heightInMeter / (double)scaledImageDimension.height;
         
-        System.out.println("realWidthPerPixel = " + realWidthPerPixel);
-        System.out.println("realHeightPerPixel = " + realHeightPerPixel);
+        System.out.println("realWidthInMeterPerPixel = " + realWidthInMeterPerPixel);
+        System.out.println("realHeightInMeterPerPixel = " + realHeightInMeterPerPixel);
         
         this.CentralPoint = new Point(scaledImageDimension.width / 2, scaledImageDimension.height / 2);
         
@@ -78,7 +80,15 @@ public class DrawLocationsPanel extends JPanel {
         
         for(PlacesSearchResult res : this.results) {
             
-            //System.out.println("LOCATION NEAR ---> name: " + res.name + " " + res.geometry.location + " ");
+            // y = mx + q
+            final double distanceInMeter = this.calculateDistanceInMeter(this.myPosition, res.geometry.location);
+            
+            final int distanceFromMyPosition = (int) (distanceInMeter / realWidthInMeterPerPixel);
+            final double angleFromMyPosition = this.calculateAngleFromCoordinate(this.myPosition, res.geometry.location) + 90;
+            final double m = Math.tan(angleFromMyPosition);
+            
+            System.out.println("LOCATION = " + res.name + " - Distance = " + distanceInMeter + " mt - Angle = " + m);
+            
             LatLng whereToPlaceLocationOnPanel = calculateVectorDifference(myCoordinates, res.geometry.location);
             
             
@@ -113,6 +123,38 @@ public class DrawLocationsPanel extends JPanel {
                     actualLocationPositionRelativeToScreen.x + (RADIUS / 2), 
                     actualLocationPositionRelativeToScreen.y + (RADIUS / 2));
         }
+    }
+    
+    private double calculateDistanceInMeter(LatLng p1, LatLng p2) {
+        double theta = p1.lng - p2.lng;
+        double dist = Math.sin(Math.toRadians(p1.lat)) * Math.sin(Math.toRadians(p2.lat)) + Math.cos(Math.toRadians(p1.lat)) * Math.cos(Math.toRadians(p2.lat)) * Math.cos(Math.toRadians(theta));
+        dist = Math.acos(dist);
+        dist = Math.toDegrees(dist);
+        dist = dist * 60 * 1.1515;
+        dist = dist * 1.609344;
+        dist = dist * 1000;
+        return dist;
+    }
+    
+    private double calculateAngleFromCoordinate(LatLng p1, LatLng p2) {
+
+        double lat1 = p1.lat;
+        double long1 = p1.lng;
+        double lat2 = p2.lat;
+        double long2 = p2.lng;
+        double dLon = (long2 - long1);
+
+        double y = Math.sin(dLon) * Math.cos(lat2);
+        double x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1)
+                * Math.cos(lat2) * Math.cos(dLon);
+
+        double brng = Math.atan2(y, x);
+
+        brng = Math.toDegrees(brng);
+        brng = (brng + 360) % 360;
+        brng = 360 - brng; // count degrees counter-clockwise - remove to make clockwise
+
+        return brng;
     }
     
     private LatLng calculateVectorDifference(final Point pivotLocation, final LatLng C2) {
