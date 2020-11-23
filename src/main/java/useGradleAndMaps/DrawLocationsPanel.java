@@ -35,6 +35,26 @@ public class DrawLocationsPanel extends JPanel {
         this.CentralPoint = new Point(this.getSize().width / 2, this.getSize().height / 2);
         Graphics2D g2d = (Graphics2D) g;
         
+        //this.results.stream().map(i -> calculateVectorDifference(myCoordinates, i.geometry.location)).reduce((a,b) -> a.lat));
+        Point max = new Point(this.CentralPoint);
+        Double maxDist = 0.0;
+        PlacesSearchResult maxPlace = new PlacesSearchResult();
+        for(PlacesSearchResult res : this.results) {
+            LatLng pt = calculateVectorDifference(myCoordinates, res.geometry.location);
+            double distance = Math.sqrt(Math.pow(pt.lat - this.CentralPoint.y, 2) + Math.pow(pt.lng - this.CentralPoint.x, 2));
+            System.out.println("Name---> " + res.name + " Distance--> " + distance);
+            if(distance > maxDist) {
+                maxDist = distance;
+                max = new Point(
+                        (int)(this.CentralPoint.x + pt.lat),
+                        (int)(this.CentralPoint.y + pt.lng)
+                        );
+                maxPlace = res;
+            }
+            
+        }
+        
+        System.out.println("Futhest ---> " + maxPlace.name);
         
         for(PlacesSearchResult res : this.results) {
             
@@ -42,8 +62,8 @@ public class DrawLocationsPanel extends JPanel {
             LatLng whereToPlaceLocationOnPanel = calculateVectorDifference(myCoordinates, res.geometry.location);
             
             Point actualLocationPositionRelativeToScreen = new Point(
-                    (int)(this.CentralPoint.x + whereToPlaceLocationOnPanel.lat),
-                    (int)(this.CentralPoint.y + whereToPlaceLocationOnPanel.lng)
+                    (int)(this.CentralPoint.x - whereToPlaceLocationOnPanel.lng),
+                    (int)(this.CentralPoint.y - whereToPlaceLocationOnPanel.lat)
                     );
             
             g2d.fillOval(
@@ -66,8 +86,8 @@ public class DrawLocationsPanel extends JPanel {
     
     private LatLng calculateVectorDifference(final Point pivotLocation, final LatLng C2) {
         return new LatLng(
-                (int)(transformedCoordinates(C2).y - pivotLocation.y), //La latitudine sono le Y la long le X 
-                (int)(pivotLocation.x - transformedCoordinates(C2).x));
+                (int)( (-pivotLocation.y) + transformedCoordinates(C2).y), //La latitudine sono le Y la long le X 
+                (int)((pivotLocation.x) - transformedCoordinates(C2).x));
     }
     
     /**
@@ -77,6 +97,6 @@ public class DrawLocationsPanel extends JPanel {
      */
     
     private Point transformedCoordinates(final LatLng C1) {
-        return new Point((int)(C1.lat * PROPORTIONAL_MULTIPLIER),(int)(C1.lng * PROPORTIONAL_MULTIPLIER));
+        return new Point((int)(C1.lng * PROPORTIONAL_MULTIPLIER), (int)(C1.lat * PROPORTIONAL_MULTIPLIER));
     }  
 }

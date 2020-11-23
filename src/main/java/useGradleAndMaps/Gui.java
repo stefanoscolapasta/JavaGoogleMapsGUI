@@ -58,12 +58,12 @@ public class Gui {
         
         JPanel pPlaceOfInterestPanel = new JPanel(new BorderLayout());
         pPlaceOfInterestPanel.setBorder(new TitledBorder("What are you looking for nearby?"));
-        this.tDestination = new JTextField("Pasticceria", 20);
+        this.tDestination = new JTextField("Sushi", 20);
         pPlaceOfInterestPanel.add(this.tDestination, BorderLayout.CENTER);
         
         JPanel pRadiusPanel = new JPanel(new BorderLayout());
         pRadiusPanel.setBorder(new TitledBorder("How far from you should I look for (KM)"));
-        this.tDistance = new JTextField("", 25);
+        this.tDistance = new JTextField("1", 25);
         pRadiusPanel.add(this.tDistance, BorderLayout.CENTER);
         
         this.pTextPanel.add(pOriginPanel);
