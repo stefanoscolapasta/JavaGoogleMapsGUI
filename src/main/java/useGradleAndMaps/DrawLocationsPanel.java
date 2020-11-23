@@ -1,5 +1,6 @@
 package useGradleAndMaps;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -24,6 +25,8 @@ public class DrawLocationsPanel extends JPanel {
     private static final int RADIUS = 10;
     private static final int PROPORTIONAL_MULTIPLIER = 10_000_000 / 90 / 4;
     private Point CentralPoint;
+    private final static Color DEFAULT_NODE_COLOR = Color.RED;
+    private final static Color DEFAULT_LINE_COLOR = Color.BLACK;
     
     public void setResults(Pair <List<PlacesSearchResult>, LatLng> results) {
         this.results = results.first;
@@ -36,46 +39,53 @@ public class DrawLocationsPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         
         //this.results.stream().map(i -> calculateVectorDifference(myCoordinates, i.geometry.location)).reduce((a,b) -> a.lat));
-        Point max = new Point(this.CentralPoint);
-        Double maxDist = 0.0;
-        PlacesSearchResult maxPlace = new PlacesSearchResult();
-        for(PlacesSearchResult res : this.results) {
-            LatLng pt = calculateVectorDifference(myCoordinates, res.geometry.location);
-            double distance = Math.sqrt(Math.pow(pt.lat - this.CentralPoint.y, 2) + Math.pow(pt.lng - this.CentralPoint.x, 2));
-            System.out.println("Name---> " + res.name + " Distance--> " + distance);
-            if(distance > maxDist) {
-                maxDist = distance;
-                max = new Point(
-                        (int)(this.CentralPoint.x + pt.lat),
-                        (int)(this.CentralPoint.y + pt.lng)
-                        );
-                maxPlace = res;
-            }
-            
-        }
+//        Point max = new Point(this.CentralPoint);
+//        Double maxDist = 0.0;
+//        PlacesSearchResult maxPlace = new PlacesSearchResult();
+//        for(PlacesSearchResult res : this.results) {
+//            LatLng pt = calculateVectorDifference(myCoordinates, res.geometry.location);
+//            double distance = Math.sqrt(Math.pow(pt.lat - this.CentralPoint.y, 2) + Math.pow(pt.lng - this.CentralPoint.x, 2));
+//            if(distance > maxDist) {
+//                maxDist = distance;
+//                max = new Point(
+//                        (int)(this.CentralPoint.x - pt.lng),
+//                        (int)(this.CentralPoint.y - pt.lat)
+//                        );
+//                maxPlace = res;
+//            }
+//        }
+//        
+//        double screenFactorX = 0;
+//        double screenFactorY = 0;
+//        try {
+//            screenFactorX = (double)(this.getSize().width)/(double)(max.x - CentralPoint.x);
+//            screenFactorY = (double)(this.getSize().height)/(double)(-max.y + CentralPoint.y);
+//        } catch (Exception e) {
+//            e.fillInStackTrace();
+//        }
         
-        System.out.println("Futhest ---> " + maxPlace.name);
-        
         for(PlacesSearchResult res : this.results) {
             
-            System.out.println("LOCATION NEAR ---> name: " + res.name + " " + res.geometry.location + " ");
+            //System.out.println("LOCATION NEAR ---> name: " + res.name + " " + res.geometry.location + " ");
             LatLng whereToPlaceLocationOnPanel = calculateVectorDifference(myCoordinates, res.geometry.location);
             
             Point actualLocationPositionRelativeToScreen = new Point(
-                    (int)(this.CentralPoint.x - whereToPlaceLocationOnPanel.lng),
-                    (int)(this.CentralPoint.y - whereToPlaceLocationOnPanel.lat)
+                    (int)((this.CentralPoint.x - whereToPlaceLocationOnPanel.lng)),
+                    (int)((this.CentralPoint.y - whereToPlaceLocationOnPanel.lat))
                     );
-            
+            g2d.setColor(DrawLocationsPanel.DEFAULT_NODE_COLOR);
             g2d.fillOval(
                     actualLocationPositionRelativeToScreen.x,
                     actualLocationPositionRelativeToScreen.y,
                     RADIUS, RADIUS);
             
+            g2d.setColor(DrawLocationsPanel.DEFAULT_LINE_COLOR);
             g2d.drawString("YOU ARE HERE", CentralPoint.x, CentralPoint.y);
             g2d.drawString(
                     res.name,
                     actualLocationPositionRelativeToScreen.x, 
                     actualLocationPositionRelativeToScreen.y);
+            
             g2d.drawLine(
                     CentralPoint.x,
                     CentralPoint.y, 

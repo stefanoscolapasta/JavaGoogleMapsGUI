@@ -52,7 +52,7 @@ public class MapsHandlerRequest{
     }
     
     public Pair<List<PlacesSearchResult>, LatLng> getTimeTravel(final String origin, final String query, int radius) throws NoSuchElementException, ApiException, InterruptedException, IOException {
-        if(origin.isBlank() || query.isBlank() || radius > 50) {
+        if(origin.isBlank() || query.isBlank() || radius > 50 ||  radius < 1) {
             throw new NoSuchElementException();
         }
         GeocodingResult[] coord = GeocodingApi.geocode(context, origin).await();
