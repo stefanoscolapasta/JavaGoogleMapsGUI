@@ -32,6 +32,7 @@ public class Gui {
     private final JTextArea pResult;
     private final JPanel pSearchPanel;
     private final JTextField tOrigin;
+    private final JTextField tDistance;
     private final JTextField tDestination;
     private final JButton tGetNear;
     private DrawLocationsPanel drawLocations;
@@ -49,18 +50,36 @@ public class Gui {
         this.pResult = new JTextArea();
         this.pResult.setSize(10, 2);
         this.pTextPanel.setBorder(new TitledBorder("Select origin and destination"));
-
-        this.tOrigin = new JTextField("Via Fornaci 7, Cesena",10);
-        this.tDestination = new JTextField("Pasticceria",10);
-        this.pTextPanel.add(this.tOrigin);
-        this.pTextPanel.add(this.tDestination);
+        
+        JPanel pOriginPanel = new JPanel(new BorderLayout());
+        pOriginPanel.setBorder(new TitledBorder("Select Origin here"));
+        this.tOrigin = new JTextField("Via Fornaci 7, Cesena", 20);
+        pOriginPanel.add(this.tOrigin, BorderLayout.CENTER);
+        
+        JPanel pPlaceOfInterestPanel = new JPanel(new BorderLayout());
+        pPlaceOfInterestPanel.setBorder(new TitledBorder("What are you looking for nearby?"));
+        this.tDestination = new JTextField("Pasticceria", 20);
+        pPlaceOfInterestPanel.add(this.tDestination, BorderLayout.CENTER);
+        
+        JPanel pRadiusPanel = new JPanel(new BorderLayout());
+        pRadiusPanel.setBorder(new TitledBorder("How far from you should I look for (KM)"));
+        this.tDistance = new JTextField("", 25);
+        pRadiusPanel.add(this.tDistance, BorderLayout.CENTER);
+        
+        this.pTextPanel.add(pOriginPanel);
+        this.pTextPanel.add(pPlaceOfInterestPanel);
+        this.pTextPanel.add(pRadiusPanel);
         this.pTextPanel.add(this.pResult);
 
         this.tGetNear = new JButton("Get near locations"); 
         this.pMain.add(this.drawLocations, BorderLayout.CENTER); 
         this.tGetNear.addActionListener(e -> {
                 try {
-                    Pair<List<PlacesSearchResult>, LatLng> results = Gui.this.mapsHandler.getTimeTravel(Gui.this.tOrigin.getText(), Gui.this.tDestination.getText(), 1);
+                    Pair<List<PlacesSearchResult>, LatLng> results = Gui.this.mapsHandler.getTimeTravel(
+                            Gui.this.tOrigin.getText(),
+                            Gui.this.tDestination.getText(),
+                            Integer.valueOf(Gui.this.tDistance.getText())
+                            );
                     System.out.println("CHECCKA1 QUI-->" + results.first);
                     Gui.this.drawLocations.setResults(results);  
                     System.out.println("CHECCKA2 QUI-->" + results.first);
@@ -78,6 +97,8 @@ public class Gui {
                 } catch (NoSuchElementException a) {
                     // TODO Auto-generated catch block
                     Gui.this.showMapsError("Insert both origin and destination");
+                } catch (NumberFormatException a) {
+                    Gui.this.showMapsError("Insert a valid radius in km (<50)");
                 }
         });
         
@@ -85,6 +106,7 @@ public class Gui {
         this.pMain.add(this.pTextPanel, BorderLayout.NORTH);
         this.pMain.add(this.pSearchPanel, BorderLayout.SOUTH);  
         this.frame.add(this.pMain);
+        this.frame.revalidate();
         this.frame.refresh();      
     }
     

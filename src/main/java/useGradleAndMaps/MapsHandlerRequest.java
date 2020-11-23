@@ -22,28 +22,22 @@ public class MapsHandlerRequest{
     
     private static GeoApiContext context;
     private static int FROM_M_TOKM = 1000;
-//    public MapsHandlerRequest() throws ApiException, InterruptedException, IOException {
-//        this.context 
-//    }
     
     public MapsHandlerRequest() throws ApiException, InterruptedException, IOException {
         try {
             MapsHandlerRequest.context = new GeoApiContext.Builder().apiKey(new ApiKey().getApiKey()).build();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         
     }
     
     public String getDistance(final String origin, final String destination) throws NotFoundException, ApiException, InterruptedException, IOException, NoSuchElementException {
-        //GeocodingResult[] results = GeocodingApi.geocode(this.context, "44.142986, 12.240852").await();
+
         if(origin.isBlank() || destination.isBlank()) {
             throw new NoSuchElementException();
         }
         DirectionsResult directions = DirectionsApi.getDirections(context, origin, destination).await();
-//        System.out.println(directions.routes[0].legs[0]);
-//        System.out.println(directions.routes[0].legs[0].startAddress);
         return String.valueOf(directions.routes[0].legs[0].distance.humanReadable);
     }
     
@@ -51,18 +45,16 @@ public class MapsHandlerRequest{
         if(origin.isBlank() || destination.isBlank()) {
             throw new NoSuchElementException();
         }
-        //GeocodingResult[] results = GeocodingApi.geocode(this.context, "44.142986, 12.240852").await();
         DirectionsResult directions = DirectionsApi
                 .getDirections(context, origin, destination)
                 .mode(TravelMode.WALKING).await();
         return String.valueOf(directions.routes[0].legs[0].duration.humanReadable);
     }
     
-    public Pair<List<PlacesSearchResult>, LatLng> getTimeTravel(final String origin, final String query, int radius) throws ApiException, InterruptedException, IOException {
+    public Pair<List<PlacesSearchResult>, LatLng> getTimeTravel(final String origin, final String query, int radius) throws NoSuchElementException, ApiException, InterruptedException, IOException {
         if(origin.isBlank() || query.isBlank() || radius > 50) {
             throw new NoSuchElementException();
         }
-        //GeocodingResult[] results = GeocodingApi.geocode(this.context, "44.142986, 12.240852").await();
         GeocodingResult[] coord = GeocodingApi.geocode(context, origin).await();
         LatLng locationLatLang = coord[0].geometry.location;
         System.out.println("YOUR LOCATION--->" + locationLatLang);
