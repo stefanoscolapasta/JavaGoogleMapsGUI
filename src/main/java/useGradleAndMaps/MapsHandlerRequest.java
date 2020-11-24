@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.slf4j.Marker;
+
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -90,6 +93,13 @@ public class MapsHandlerRequest{
                 .maptype(StaticMapType.satellite)
                 .markers(null)
                 .await();
+       
+        
+    }
+    
+    public DistanceMatrix getPath(LatLng source, LatLng destination) throws ApiException, InterruptedException, IOException {
+        return new DistanceMatrixApiRequest(context).origins(source).destinations(destination).await();
+        
     }
     
 }
