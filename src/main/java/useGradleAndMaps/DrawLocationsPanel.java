@@ -12,12 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-
-import com.google.maps.DirectionsApiRequest;
-import com.google.maps.DirectionsApiRequest.Waypoint;
 import com.google.maps.ImageResult;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsLeg;
@@ -25,7 +21,6 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsStep;
 import com.google.maps.model.EncodedPolyline;
-import com.google.maps.model.GeocodedWaypoint;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResult;
 
@@ -76,8 +71,7 @@ public class DrawLocationsPanel extends JPanel {
                 listLegs.forEach(i -> listSteps.addAll(Arrays.asList(i.steps)));
                 
                 listSteps.forEach(i -> encodedPolys.addAll(Arrays.asList(i.polyline)));
-                
-                //list.stream().forEach(i -> System.out.println(i.));
+
             } catch (ApiException | InterruptedException | IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -124,9 +118,7 @@ public class DrawLocationsPanel extends JPanel {
         }
         
         //Here we handle destination points and paths/lines
-        
-        
-        
+                
         this.places.forEach(res -> {            
             
             Pair<Double, Double> increment = this.getPointsFromCoordinate(this.myPosition.getPosition(), res.getPosition());
@@ -137,8 +129,6 @@ public class DrawLocationsPanel extends JPanel {
             res.setX((double) actualLocationPositionRelativeToScreen.x);
             res.setY((double) actualLocationPositionRelativeToScreen.y);
             
-            //LatLng whereToPlaceLocationOnPanel = calculateVectorDifference(myCoordinates, res.geometry.location);
-            
             g2d.setColor(DrawLocationsPanel.DEFAULT_NODE_COLOR);
             g2d.fillOval(actualLocationPositionRelativeToScreen.x, 
                     actualLocationPositionRelativeToScreen.y, 
@@ -147,13 +137,7 @@ public class DrawLocationsPanel extends JPanel {
 
             g2d.setStroke(new BasicStroke(res.getSize() / 5 ));
             g2d.setColor(DrawLocationsPanel.DEFAULT_LINE_COLOR);
-            
-            
-//            g2d.drawLine(CentralPoint.x, CentralPoint.y, actualLocationPositionRelativeToScreen.x + (res.getSize() / 2),
-//                   actualLocationPositionRelativeToScreen.y + (res.getSize() / 2));
-            
-            
-            
+                      
             g2d.setColor(DrawLocationsPanel.DEFAULT_STRING_COLOR);            
             
             g2d.setFont(new Font("Default", 0, res.getSize()));            
