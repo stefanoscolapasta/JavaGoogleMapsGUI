@@ -14,13 +14,10 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.ImageResult;
 import com.google.maps.NearbySearchRequest;
 import com.google.maps.StaticMapsApi;
-import com.google.maps.StaticMapsRequest;
 import com.google.maps.StaticMapsRequest.StaticMapType;
 import com.google.maps.errors.ApiException;
 import com.google.maps.errors.NotFoundException;
-import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.EncodedPolyline;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResponse;
@@ -94,11 +91,6 @@ public class MapsHandlerRequest{
                 .markers(null)
                 .await();
        
-        
-    }
-    
-    public DistanceMatrix getPath(LatLng source, LatLng destination) throws ApiException, InterruptedException, IOException {
-        return new DistanceMatrixApiRequest(context).origins(source).destinations(destination).await();
         
     }
     

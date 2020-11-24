@@ -90,12 +90,35 @@ public class DrawLocationsPanel extends JPanel {
             g2d.drawImage(this.backgroundImage.getImage(), (int) (myPosition.getX() - (scaledImageDimension.width / 2)),
                     (int) (myPosition.getY() - (scaledImageDimension.height / 2)), scaledImageDimension.width,
                     scaledImageDimension.height, null);
-
+            
+            g2d.setColor(DrawLocationsPanel.DEFAULT_STRING_COLOR);
             g2d.drawString("YOU ARE HERE", CentralPoint.x, CentralPoint.y);
 
         }
 
         this.places.forEach(res -> {
+            
+            List<EncodedPolyline> encodedPolys = new ArrayList<>();
+            
+            try {
+                final DirectionsResult req = this.maps.getPath(this.myPosition.getPosition(), res.getPosition()).await();
+                List<DirectionsRoute> listRoutes = Arrays.asList(req.routes);
+                List<DirectionsLeg> listLegs = new ArrayList<>();
+                listRoutes.stream().forEach(i -> listLegs.addAll(Arrays.asList(i.legs)));
+                
+                List<DirectionsStep> listSteps = new ArrayList<>();
+                listLegs.forEach(i -> listSteps.addAll(Arrays.asList(i.steps)));
+                
+                listSteps.forEach(i -> encodedPolys.addAll(Arrays.asList(i.polyline)));
+                
+                //list.stream().forEach(i -> System.out.println(i.));
+            } catch (ApiException | InterruptedException | IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+            //QUA DENTRO CI SONO LE COORDINATE DI TUTTI I PUNTI DEL PATH!!!
+            encodedPolys.forEach(i -> System.out.print(" " + i.decodePath()));
             
             Pair<Double, Double> increment = this.getPointsFromCoordinate(this.myPosition.getPosition(), res.getPosition());
 
@@ -116,7 +139,9 @@ public class DrawLocationsPanel extends JPanel {
             g2d.setStroke(new BasicStroke(res.getSize() / 5 ));
             g2d.setColor(DrawLocationsPanel.DEFAULT_LINE_COLOR);
             g2d.drawLine(CentralPoint.x, CentralPoint.y, actualLocationPositionRelativeToScreen.x + (res.getSize() / 2),
-                    actualLocationPositionRelativeToScreen.y + (res.getSize() / 2));
+                   actualLocationPositionRelativeToScreen.y + (res.getSize() / 2));
+            
+            
             
             g2d.setColor(DrawLocationsPanel.DEFAULT_STRING_COLOR);            
             
