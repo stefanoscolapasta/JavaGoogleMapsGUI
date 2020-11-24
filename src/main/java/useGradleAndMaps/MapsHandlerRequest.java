@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import org.slf4j.Marker;
-
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -14,7 +11,6 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.ImageResult;
 import com.google.maps.NearbySearchRequest;
 import com.google.maps.StaticMapsApi;
-import com.google.maps.StaticMapsRequest.Markers;
 import com.google.maps.StaticMapsRequest.StaticMapType;
 import com.google.maps.errors.ApiException;
 import com.google.maps.errors.NotFoundException;

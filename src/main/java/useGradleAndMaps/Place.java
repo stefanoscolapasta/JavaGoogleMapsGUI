@@ -18,7 +18,6 @@ public class Place {
     private PlacesSearchResult place;
     
     private LatLng coordinates;
-    private Place basic;
     private List<LatLng> pathLatLng = new ArrayList<>();
     
   
