@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import com.google.maps.ImageResult;
@@ -39,11 +41,9 @@ public class DrawLocationsPanel extends JPanel {
     private MapsHandlerRequest maps;
     private final int EARTH_RADIUS = 7_000_000; //We fiddled around with various earth radius values and found out tha 7_000 km is a good number
     private final int FULL_CIRCLE = 360;
+    private final int MAXIMUM_DISTANCE_IN_PX_TO_HOVER = 10; //
     private List<Place> places = new ArrayList<>();
     private Place myPosition;
-
-    private double realWidthInMeterPerPixel;
-    private double realHeightInMeterPerPixel;
 
     private double imageSideInMeters = (40_000 / Math.pow(2, MapsHandlerRequest.DEFAULT_ZOOM)) * 2 * 1_000;;   
     private double metersPerPixel;
@@ -132,9 +132,14 @@ public class DrawLocationsPanel extends JPanel {
 
             this.CentralPoint = new Point(this.myPosition.getX().intValue(), this.myPosition.getY().intValue());
 
-            g2d.drawImage(this.backgroundImage.getImage(), (int) (myPosition.getX() - (scaledImageDimension.width / 2)),
-                    (int) (myPosition.getY() - (scaledImageDimension.height / 2)), scaledImageDimension.width,
-                    scaledImageDimension.height, null);
+            g2d.drawImage(
+                    this.backgroundImage.getImage(),
+                    (int) (myPosition.getX() - (scaledImageDimension.width / 2)),
+                    (int) (myPosition.getY() - (scaledImageDimension.height / 2)),
+                    scaledImageDimension.width,
+                    scaledImageDimension.height,
+                    null
+                    );
             
             g2d.setColor(DrawLocationsPanel.DEFAULT_STRING_COLOR);
             g2d.drawString("YOU ARE HERE", CentralPoint.x, CentralPoint.y);
@@ -214,31 +219,20 @@ public class DrawLocationsPanel extends JPanel {
         
     }
     
-    public Place getPlaceNearPoint(int x, int y) {
-        double MAX_DIST = 10; // px
-        
-        Place nearestPlace = null;
-        double nearestDistance = Double.MAX_VALUE;
-        
-        for (Place place : this.places) {
-            double distance = Math.sqrt(
-                    Math.pow(place.getX() - x, 2) + Math.pow(place.getY() - y, 2));
-            
-            if (distance < MAX_DIST && distance < nearestDistance) {
-                nearestPlace = place;
-            }
-        }       
-        
-        
-        return nearestPlace;
+    public Optional<Place> getPlaceNearPoint(final int x,final int y) {
+        double MAX_DIST = MAXIMUM_DISTANCE_IN_PX_TO_HOVER; // px
+
+        return this.places.stream()
+                .filter(p -> Math.pow(p.getX() - x, 2) + Math.pow(p.getY() - y, 2) < MAX_DIST)
+                .min((p1, p2) -> (int)((Math.pow(p1.getX() - x, 2) + Math.pow(p1.getY() - y, 2) - (Math.pow(p2.getX() - x, 2) + Math.pow(p2.getY() - y, 2)))));
     }
 
     private Pair<Double, Double> getPointsFromCoordinate(LatLng p1, LatLng p2) {
 
         final double distanceInMeter = this.calculateDistanceInMeter(p1, p2);
-        final double distanceFromMyPosition = (distanceInMeter / metersPerPixel);
+        final double distanceFromMyPosition = (distanceInMeter / metersPerPixel); //gets the distance between two points in pixels
 
-        final double angleFromMyPosition = this.calculateAngleFromCoordinate(p1, p2) + 90;
+        final double angleFromMyPosition = this.calculateAngleFromCoordinate(p1, p2);
         final double incrementX = Math.cos(Math.toRadians(angleFromMyPosition)) * distanceFromMyPosition;
         final double incrementY = Math.sin(Math.toRadians(angleFromMyPosition)) * distanceFromMyPosition;
 
@@ -252,14 +246,14 @@ public class DrawLocationsPanel extends JPanel {
         double lng1 = p1.lng;
         double lat2 = p2.lat;
         double lng2 = p2.lng;
-
-        double earthRadius = EARTH_RADIUS; // meters
         double dLat = Math.toRadians(lat2 - lat1);
         double dLng = Math.toRadians(lng2 - lng1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(lat1))
-                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) 
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        float dist = (float) (earthRadius * c);
+        float dist = (float) (EARTH_RADIUS * c);
 
         return dist;
 
@@ -280,7 +274,7 @@ public class DrawLocationsPanel extends JPanel {
 
         brng = Math.toDegrees(brng);
         brng = (brng + FULL_CIRCLE) % FULL_CIRCLE;
-        brng = FULL_CIRCLE - brng; // count degrees counter-clockwise - remove to make clockwise
+        brng = FULL_CIRCLE - brng  + 90; // count degrees counter-clockwise - remove to make clockwise
 
         return brng;
     }

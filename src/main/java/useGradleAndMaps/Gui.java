@@ -9,6 +9,8 @@ import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -124,16 +126,14 @@ public class Gui {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                Place p = Gui.this.drawLocations.getPlaceNearPoint(e.getX(), e.getY());
+                Optional<Place> p = Gui.this.drawLocations.getPlaceNearPoint(e.getX(), e.getY());
 
-                if (p != null) {
-                    System.out.println(p.getPlace().name);
-                    p.setSize(Place.HOVER_SIZE);
-
+                if (p.isPresent()) {
+                    System.out.println(p.get().getPlace().name);
+                    p.get().setSize(Place.HOVER_SIZE);
                 }
 
                 Gui.this.drawLocations.repaint();
-
             }
 
             @Override
