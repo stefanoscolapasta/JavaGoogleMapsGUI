@@ -1,5 +1,7 @@
 package useGradleAndMaps;
 
+import org.gavaghan.geodesy.*;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -12,6 +14,7 @@ import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
 
 import com.google.maps.ImageResult;
 import com.google.maps.model.LatLng;
@@ -80,30 +83,28 @@ public class DrawLocationsPanel extends JPanel {
         
         for(PlacesSearchResult res : this.results) {
             
-            // y = mx + q
-            final double distanceInMeter = this.calculateDistanceInMeter(this.myPosition, res.geometry.location);
             
-            final int distanceFromMyPosition = (int) (distanceInMeter / realWidthInMeterPerPixel);
+            final double distanceInMeter = this.calculateDistanceInMeter(this.myPosition, res.geometry.location);            
+            final double distanceFromMyPosition = (distanceInMeter / realWidthInMeterPerPixel);
+            
             final double angleFromMyPosition = this.calculateAngleFromCoordinate(this.myPosition, res.geometry.location) + 90;
-            final double m = Math.tan(angleFromMyPosition);
+            final double incrementX = Math.cos(Math.toRadians(angleFromMyPosition)) * distanceFromMyPosition;
+            final double incrementY = Math.sin(Math.toRadians(angleFromMyPosition)) * distanceFromMyPosition;
             
-            System.out.println("LOCATION = " + res.name + " - Distance = " + distanceInMeter + " mt - Angle = " + m);
-            
-            LatLng whereToPlaceLocationOnPanel = calculateVectorDifference(myCoordinates, res.geometry.location);
-            
-            
-            Point actualLocationPositionRelativeToScreen = new Point(
-                    (int)((this.CentralPoint.x - (whereToPlaceLocationOnPanel.lng))),
-                    (int)((this.CentralPoint.y - (whereToPlaceLocationOnPanel.lat)))
-                    );
             /*
-            Dimension scaledPointCoordinatesComparedToImage = this.getScaledDimension(
-                    new Dimension(
-                            actualLocationPositionRelativeToScreen.x,
-                            actualLocationPositionRelativeToScreen.y),
-                    scaledImageDimension
-                    );
+             System.out.println( "\n" +
+                                "\n - LOCATION = " + res.name + 
+                                "\n - Distance = " + distanceFromMyPosition + " px" +
+                                "\n - Angle = " + angleFromMyPosition + "°" +
+                                "\n - incrementX = " + incrementX + 
+                                "\n - incrementY = " + incrementY
+                                );
             */
+            Point actualLocationPositionRelativeToScreen = new Point(
+                    (int)(this.CentralPoint.x + incrementX),
+                    (int)(this.CentralPoint.y - incrementY));
+                    
+
             g2d.setColor(DrawLocationsPanel.DEFAULT_NODE_COLOR);
             g2d.fillOval(
                     actualLocationPositionRelativeToScreen.x,
@@ -126,6 +127,38 @@ public class DrawLocationsPanel extends JPanel {
     }
     
     private double calculateDistanceInMeter(LatLng p1, LatLng p2) {
+        
+        GeodeticCalculator geoCalc = new GeodeticCalculator();
+
+        Ellipsoid reference = Ellipsoid.WGS84;  
+
+        GlobalPosition userPos = new GlobalPosition(p1.lat, p1.lng, 0.0); // Point A
+
+        GlobalPosition pointA = new GlobalPosition(p2.lat, p2.lng, 0.0); // Point B
+
+        double distance = geoCalc.calculateGeodeticCurve(reference, userPos, pointA).getEllipsoidalDistance(); // Distance between Point A and Point B
+        
+        return distance;
+        
+        /*
+        double lat1 = p1.lat;
+        double lng1 = p1.lng;
+        double lat2 = p2.lat;
+        double lng2 = p2.lng;
+        
+        double earthRadius = 6371000; //meters
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                   Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                   Math.sin(dLng/2) * Math.sin(dLng/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        float dist = (float) (earthRadius * c);
+
+        return dist;
+        
+        */
+        /*
         double theta = p1.lng - p2.lng;
         double dist = Math.sin(Math.toRadians(p1.lat)) * Math.sin(Math.toRadians(p2.lat)) + Math.cos(Math.toRadians(p1.lat)) * Math.cos(Math.toRadians(p2.lat)) * Math.cos(Math.toRadians(theta));
         dist = Math.acos(dist);
@@ -134,14 +167,15 @@ public class DrawLocationsPanel extends JPanel {
         dist = dist * 1.609344;
         dist = dist * 1000;
         return dist;
+        */
     }
     
     private double calculateAngleFromCoordinate(LatLng p1, LatLng p2) {
 
-        double lat1 = p1.lat;
-        double long1 = p1.lng;
-        double lat2 = p2.lat;
-        double long2 = p2.lng;
+        double lat1 = Math.toRadians(p1.lat);
+        double long1 = Math.toRadians(p1.lng);
+        double lat2 = Math.toRadians(p2.lat);
+        double long2 = Math.toRadians(p2.lng);
         double dLon = (long2 - long1);
 
         double y = Math.sin(dLon) * Math.cos(lat2);
@@ -156,13 +190,7 @@ public class DrawLocationsPanel extends JPanel {
 
         return brng;
     }
-    
-    private LatLng calculateVectorDifference(final Point pivotLocation, final LatLng C2) {
-        return new LatLng(
-                (int)( (-pivotLocation.y) + transformedCoordinates(C2).y), //La latitudine sono le Y la long le X 
-                (int)((pivotLocation.x) - transformedCoordinates(C2).x));
-    }
-    
+
     /**
      * 
      * @param C1 is the coordinate pair to transform to a number useful to be put on screen whith coordinates

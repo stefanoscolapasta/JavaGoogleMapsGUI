@@ -74,13 +74,15 @@ public class MapsHandlerRequest{
     
     public ImageResult getGeoImageAtCoordinates(LatLng locationLatLang) throws ApiException, InterruptedException, IOException {
         return StaticMapsApi
-                .newRequest(context, new Size(1920, 1080))
+                .newRequest(context, new Size(1280, 720))
                 .center(locationLatLang)
                 .zoom(15)
                 .scale(2)
                 .maptype(StaticMapType.satellite)
                 .markers(null)
                 .await();
+       
+        
     }
     
 }
