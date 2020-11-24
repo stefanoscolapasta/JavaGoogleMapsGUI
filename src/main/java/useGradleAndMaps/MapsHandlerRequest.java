@@ -25,17 +25,18 @@ import com.google.maps.model.TravelMode;
 public class MapsHandlerRequest{
     
     private static GeoApiContext context;
-    private static int FROM_M_TOKM = 1000;
+    private static int FROM_M_TO_KM = 1000;
     private static int SIZE_W_REQUEST = 1920;
-    private static int SIZE_H_REQUEST = 1920;
+    private static int SIZE_H_REQUEST = 1080;
+    private final int imageScaleValue = 15;
+    private final Size imageSize = new Size(SIZE_W_REQUEST, SIZE_H_REQUEST); 
     
-    public MapsHandlerRequest() throws ApiException, InterruptedException, IOException {
+    public MapsHandlerRequest() throws ApiException, InterruptedException {
         try {
             MapsHandlerRequest.context = new GeoApiContext.Builder().apiKey(new ApiKey().getApiKey()).build();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        
+        }    
     }
     
     public String getDistance(final String origin, final String destination) throws NotFoundException, ApiException, InterruptedException, IOException, NoSuchElementException {
@@ -67,7 +68,7 @@ public class MapsHandlerRequest{
         System.out.println("YOUR LOCATION--->" + locationLatLang);
         PlacesSearchResponse req = new NearbySearchRequest(context)
                 .location(locationLatLang)
-                .radius(radius*MapsHandlerRequest.FROM_M_TOKM)
+                .radius(radius*MapsHandlerRequest.FROM_M_TO_KM)
                 .keyword(query)
                 .await();
         List<PlacesSearchResult> results = Arrays.asList(req.results);
@@ -80,13 +81,16 @@ public class MapsHandlerRequest{
     
     public ImageResult getGeoImageAtCoordinates(final LatLng locationLatLang) throws ApiException, InterruptedException, IOException {
         return StaticMapsApi
-                .newRequest(context, new Size(SIZE_W_REQUEST, SIZE_H_REQUEST))
+                .newRequest(context, this.imageSize)
                 .center(locationLatLang)
-                .zoom(15)
-                .scale(5)
+                .zoom(this.imageScaleValue)
+                .scale(6)
                 .maptype(StaticMapType.satellite)
-                .await();
-      
+                .await();    
+    }
+    
+    public int getImageScaleValue() {
+        return this.imageScaleValue;
     }
     
 }
