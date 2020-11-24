@@ -4,11 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.swing.JButton;
@@ -16,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-import com.google.maps.ImageResult;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResult;
@@ -26,12 +23,11 @@ public class Gui {
     private final JPanel pMain;
     private final JPanel pTextPanel;
     private final JTextArea pResult;
-    private final JPanel pSearchPanel;
     private final JTextField tOrigin;
-    private final JTextField tDistance;
     private final JTextField tDestination;
     private final JButton tGetNear;
     private DrawLocationsPanel drawLocations;
+    private final static int MAX_SEARCH_ZOOM_RADIUS = 50;
     private final MapsHandlerRequest mapsHandler;
 
     public Gui() throws ApiException, InterruptedException, IOException {
@@ -44,7 +40,6 @@ public class Gui {
         this.pMain = new JPanel(new BorderLayout());
         this.pTextPanel = new JPanel(new FlowLayout());
         this.pTextPanel.setSize(15, 3);
-        this.pSearchPanel = new JPanel(new FlowLayout());
 
         this.pResult = new JTextArea();
         this.pResult.setSize(10, 2);
@@ -62,64 +57,31 @@ public class Gui {
 
         JPanel pRadiusPanel = new JPanel(new BorderLayout());
         pRadiusPanel.setBorder(new TitledBorder("How far from you should I look for (KM)"));
-        this.tDistance = new JTextField("1", 25);
-        pRadiusPanel.add(this.tDistance, BorderLayout.CENTER);
-
+        this.tGetNear = new JButton("Get near locations");
         this.pTextPanel.add(pOriginPanel);
         this.pTextPanel.add(pPlaceOfInterestPanel);
-        this.pTextPanel.add(pRadiusPanel);
-        this.pTextPanel.add(this.pResult);
+        this.pTextPanel.add(this.tGetNear);
+       
         
-        
-        
-        this.tGetNear = new JButton("Get near locations");
         this.pMain.add(this.drawLocations, BorderLayout.CENTER);
         this.tGetNear.addActionListener(e -> {
-
-            try {
-                Pair<List<PlacesSearchResult>, LatLng> results = Gui.this.mapsHandler.getTimeTravel(
-                        Gui.this.tOrigin.getText(), Gui.this.tDestination.getText(),
-                        Integer.valueOf(Gui.this.tDistance.getText()));
-                System.out.println("CHECCKA1 QUI-->" + results.first);
-                ImageResult geoImageRes = Gui.this.mapsHandler.getGeoImageAtCoordinates(results.second);
-                Gui.this.drawLocations.setResults(results, geoImageRes, Gui.this.mapsHandler.getImageScaleValue());
-                System.out.println("CHECCKA2 QUI-->" + results.first);
-
-                Gui.this.drawLocations.repaint();
-            } catch (ApiException a) {
-                // TODO Auto-generated catch block
-                Gui.this.showMapsError("Try to be a little more specific");
-            } catch (InterruptedException a) {
-                // TODO Auto-generated catch block
-                a.printStackTrace();
-            } catch (NoSuchElementException a) {
-                // TODO Auto-generated catch block
-                Gui.this.showMapsError("Insert both origin and destination");
-            } catch (NumberFormatException a) {
-                Gui.this.showMapsError("Insert a valid radius in km (<50)");
-            } catch (IOException a) {
-                // TODO Auto-generated catch block
-                a.printStackTrace();
-            }
+            this.refreshNearLocationsInRadius();           
         });
 
-        this.drawLocations.addMouseWheelListener(new MouseWheelListener() {
-            
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
+        this.drawLocations.addMouseWheelListener(e -> {
                 // TODO Auto-generated method stub
                 double change = e.getPreciseWheelRotation();
-                if (change < 0) {
+                if (change < 0 && fromZoomValueToKmRadius(mapsHandler.getZoom()) < MAX_SEARCH_ZOOM_RADIUS) {
                     mapsHandler.setZoom(mapsHandler.getZoom() + 1);
+                    this.refreshNearLocationsInRadius();  
                     System.out.println("Zoom In");
-                }else {
+                    
+                } else {
                     mapsHandler.setZoom(mapsHandler.getZoom() - 1);
+                    this.refreshNearLocationsInRadius();  
                     System.out.println("Zoom Out");
                 }
-                
-                Gui.this.drawLocations.refreshImage();
                 Gui.this.drawLocations.repaint();
-            }
         });
 
         this.drawLocations.addMouseMotionListener(new MouseMotionListener() {
@@ -142,18 +104,36 @@ public class Gui {
             }
         });
 
-        this.pSearchPanel.add(this.tGetNear);
-        this.pSearchPanel.revalidate();
+        
         this.pTextPanel.revalidate();
         this.pMain.add(this.pTextPanel, BorderLayout.NORTH);
-        this.pMain.add(this.pSearchPanel, BorderLayout.SOUTH);
+        this.pMain.add(new JPanel(), BorderLayout.SOUTH);
         this.pMain.revalidate();
         this.frame.add(this.pMain);
         this.frame.refresh();
         this.frame.revalidate();
     }
-
-    private void showMapsError(String message) {
-        this.pResult.setText(message);
+    
+    private void refreshNearLocationsInRadius() {
+        try {
+                Pair<List<PlacesSearchResult>, LatLng> results = this.mapsHandler.getTimeTravel(
+                        this.tOrigin.getText(),
+                        this.tDestination.getText(),
+                        fromZoomValueToKmRadius(this.mapsHandler.getZoom()) //getting radius from zoom to query 
+                        );
+                
+                System.out.println("CHECCKA1 QUI-->" + results.first);
+                this.drawLocations.setResults(results);
+                System.out.println("CHECCKA2 QUI-->" + results.first); 
+                
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.drawLocations.refreshImage();
+        this.drawLocations.repaint();
+    }
+    
+    private int fromZoomValueToKmRadius(final int zoomValue) {
+        return (int)(40_000 / Math.pow(2, zoomValue));
     }
 }

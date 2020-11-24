@@ -16,7 +16,6 @@ import java.util.Optional;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import com.google.maps.ImageResult;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsResult;
@@ -44,14 +43,17 @@ public class DrawLocationsPanel extends JPanel {
     private final int MAXIMUM_DISTANCE_IN_PX_TO_HOVER = 10; //
     private List<Place> places = new ArrayList<>();
     private Place myPosition;
-
-    private double imageSideInMeters = (40_000 / Math.pow(2, MapsHandlerRequest.DEFAULT_ZOOM)) * 2 * 1_000;;   
+    private double imageSideInMeters = (40_000 / Math.pow(2, MapsHandlerRequest.DEFAULT_ZOOM)) * 2 * 1_000;   
     private double metersPerPixel;
 
     public DrawLocationsPanel(MapsHandlerRequest maps) {
         this.maps = maps;
     }
-
+    
+    public Place getMyPosition() {
+        return this.myPosition;
+    }
+    
     public void refreshImage() {
         try {
             this.backgroundImage = new ImageIcon(this.maps.getGeoImageAtCoordinates(this.myPosition.getPosition()).imageData);
@@ -66,11 +68,8 @@ public class DrawLocationsPanel extends JPanel {
      * @param geoImageRes is the image we request the API for and is here handled to
      * be used effectively in the repaint() method
      * */
-    public void setResults(Pair<List<PlacesSearchResult>, LatLng> results, ImageResult geoImageRes, int imageScaleValue) {
-        this.imageSideInMeters = (40_000 / Math.pow(2, imageScaleValue)) * 2 * 1_000;
+    public void setResults(Pair<List<PlacesSearchResult>, LatLng> results) {
         this.myPosition = new Place(null, results.second, 0.0, 0.0);
-        this.refreshImage();
-        
         this.refreshImage();
         this.places = new ArrayList<>();
       
@@ -123,7 +122,7 @@ public class DrawLocationsPanel extends JPanel {
                 new Dimension(this.backgroundImage.getIconWidth(), this.backgroundImage.getIconHeight()),
                 this.getSize());
 
-        metersPerPixel = this.imageSideInMeters / (double) scaledImageDimension.width;
+        this.metersPerPixel = this.imageSideInMeters / (double) scaledImageDimension.width;
 
         //Here we handle the central point
         if (this.places.size() > 0) {
@@ -157,8 +156,9 @@ public class DrawLocationsPanel extends JPanel {
             
             res.setX((double) actualLocationPositionRelativeToScreen.x);
             res.setY((double) actualLocationPositionRelativeToScreen.y);
-            
+                      
             g2d.setColor(DrawLocationsPanel.DEFAULT_NODE_COLOR);
+            
             g2d.fillOval(actualLocationPositionRelativeToScreen.x - (res.getSize()/2), 
                     actualLocationPositionRelativeToScreen.y - (res.getSize()/2), 
                     res.getSize(),
@@ -212,9 +212,7 @@ public class DrawLocationsPanel extends JPanel {
                     actualLocationPositionRelativeToScreen.y
                     );
             
-            
             res.setSize(Place.DEFAULT_SIZE);
-            
         });
         
     }
