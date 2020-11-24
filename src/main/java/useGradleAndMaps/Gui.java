@@ -34,6 +34,7 @@ public class Gui {
         this.mapsHandler = new MapsHandlerRequest();
 
         this.frame = new MyFrame("Maps");
+        
         this.drawLocations = new DrawLocationsPanel(mapsHandler);
 
         this.pMain = new JPanel(new BorderLayout());
@@ -64,7 +65,9 @@ public class Gui {
         this.pTextPanel.add(pPlaceOfInterestPanel);
         this.pTextPanel.add(pRadiusPanel);
         this.pTextPanel.add(this.pResult);
-
+        
+        
+        
         this.tGetNear = new JButton("Get near locations");
         this.pMain.add(this.drawLocations, BorderLayout.CENTER);
         this.tGetNear.addActionListener(e -> {

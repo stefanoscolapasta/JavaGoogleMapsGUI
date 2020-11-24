@@ -28,7 +28,7 @@ public class MapsHandlerRequest{
     private static int FROM_M_TO_KM = 1000;
     private static int SIZE_W_REQUEST = 1920;
     private static int SIZE_H_REQUEST = 1080;
-    private final int imageScaleValue = 15;
+    private final int zoom = 15;
     private final Size imageSize = new Size(SIZE_W_REQUEST, SIZE_H_REQUEST); 
     
     public MapsHandlerRequest() throws ApiException, InterruptedException {
@@ -83,14 +83,14 @@ public class MapsHandlerRequest{
         return StaticMapsApi
                 .newRequest(context, this.imageSize)
                 .center(locationLatLang)
-                .zoom(this.imageScaleValue)
-                .scale(6)
+                .zoom(this.zoom)
+                .scale(1)
                 .maptype(StaticMapType.satellite)
                 .await();    
     }
     
     public int getImageScaleValue() {
-        return this.imageScaleValue;
+        return this.zoom;
     }
     
 }
