@@ -90,8 +90,7 @@ public class MapsHandlerRequest{
                 .scale(5)
                 .maptype(StaticMapType.satellite)
                 .await();
-       
-        
+      
     }
     
 }
