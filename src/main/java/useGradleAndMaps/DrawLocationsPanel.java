@@ -5,13 +5,24 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.DirectionsApiRequest.Waypoint;
 import com.google.maps.ImageResult;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsLeg;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.DirectionsStep;
+import com.google.maps.model.EncodedPolyline;
+import com.google.maps.model.GeocodedWaypoint;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResult;
 
@@ -22,24 +33,25 @@ public class DrawLocationsPanel extends JPanel {
      */
     private static final long serialVersionUID = 1L;
     private List<PlacesSearchResult> results = new ArrayList<>();
-    private Point myCoordinates;
     private static final int RADIUS = 10;
-    private static final int PROPORTIONAL_MULTIPLIER = 1_000_000 / 90;
     private Point CentralPoint;
     private final static Color DEFAULT_NODE_COLOR = Color.RED;
     private final static Color DEFAULT_LINE_COLOR = Color.ORANGE;
     private final static Color DEFAULT_STRING_COLOR = Color.WHITE;
     private ImageIcon backgroundImage = new ImageIcon();
-    
-    
-    
     private LatLng myPosition;
+    private MapsHandlerRequest handler;
+    
+    public DrawLocationsPanel() throws ApiException, InterruptedException, IOException {
+        this.handler = new MapsHandlerRequest();
+    }
+    
+    //Get width in meters from 
     private final double widthInMeter = (40_000/Math.pow(2,  15)) * 2 * 1_000;
     private final double heightInMeter = (40_000/Math.pow(2,  15)) * 2 * 1_000;
     
     public void setResults(Pair <List<PlacesSearchResult>, LatLng> results, ImageResult geoImageRes) {
         this.results = results.first;
-        this.myCoordinates = this.transformedCoordinates(results.second); 
         this.backgroundImage = new ImageIcon(geoImageRes.imageData);
         this.myPosition = results.second;
     }
@@ -73,22 +85,39 @@ public class DrawLocationsPanel extends JPanel {
                 scaledImageDimension.height,
                 null
                 );
-
-        
-        
+      
         for(PlacesSearchResult res : this.results) {
             
-            // y = mx + q
+            List<EncodedPolyline> encodedPolys = new ArrayList<>();
+            
+            try {
+                final DirectionsResult req = this.handler.getPath(this.myPosition, res.geometry.location).await();
+                List<DirectionsRoute> listRoutes = Arrays.asList(req.routes);
+                List<DirectionsLeg> listLegs = new ArrayList<>();
+                listRoutes.stream().forEach(i -> listLegs.addAll(Arrays.asList(i.legs)));
+                
+                List<DirectionsStep> listSteps = new ArrayList<>();
+                listLegs.forEach(i -> listSteps.addAll(Arrays.asList(i.steps)));
+                
+                listSteps.forEach(i -> encodedPolys.addAll(Arrays.asList(i.polyline)));
+                
+                //list.stream().forEach(i -> System.out.println(i.));
+            } catch (ApiException | InterruptedException | IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+            //QUA DENTRO CI SONO LE COORDINATE DI TUTTI I PUNTI DEL PATH!!!
+            encodedPolys.forEach(i -> System.out.print(" " + i.decodePath()));
+            
             final double distanceInMeter = this.calculateDistanceInMeter(this.myPosition, res.geometry.location);
             
-            final int distanceFromMyPosition = (int) (distanceInMeter / realWidthInMeterPerPixel);
+            final double distanceFromMyPosition = (double) (distanceInMeter / realWidthInMeterPerPixel);
             final double angleFromMyPosition = this.calculateAngleFromCoordinate(this.myPosition, res.geometry.location) + 90;
 
             final double incrementX = Math.cos(Math.toRadians(angleFromMyPosition)) * distanceFromMyPosition;
             final double incrementY = Math.sin(Math.toRadians(angleFromMyPosition)) * distanceFromMyPosition;
-            
-            
-            System.out.println("LOCATION = " + res.name + " - Distance = " + distanceInMeter + " mt - Angle = ");
+      
             
             //LatLng whereToPlaceLocationOnPanel = calculateVectorDifference(myCoordinates, res.geometry.location);
             
@@ -132,10 +161,10 @@ public class DrawLocationsPanel extends JPanel {
     
     private double calculateAngleFromCoordinate(LatLng p1, LatLng p2) {
 
-        double lat1 = p1.lat;
-        double long1 = p1.lng;
-        double lat2 = p2.lat;
-        double long2 = p2.lng;
+        double lat1 = Math.toRadians(p1.lat);
+        double long1 = Math.toRadians(p1.lng);
+        double lat2 = Math.toRadians(p2.lat);
+        double long2 = Math.toRadians(p2.lng);
         double dLon = (long2 - long1);
 
         double y = Math.sin(dLon) * Math.cos(lat2);
@@ -156,11 +185,7 @@ public class DrawLocationsPanel extends JPanel {
      * @param C1 is the coordinate pair to transform to a number useful to be put on screen whith coordinates
      * @return LatLng a new set of coordinates
      */
-    
-    private Point transformedCoordinates(final LatLng C1) {
-        return new Point((int)(C1.lng * PROPORTIONAL_MULTIPLIER), (int)(C1.lat * PROPORTIONAL_MULTIPLIER));
-    }  
-    
+
     public Dimension getScaledDimension(Dimension imgSize, Dimension boundary) {
 
         int original_width = imgSize.width;

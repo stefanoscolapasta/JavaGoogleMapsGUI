@@ -1,10 +1,7 @@
 package useGradleAndMaps;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -13,22 +10,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-
-import com.google.maps.DirectionsApi;
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
 import com.google.maps.ImageResult;
 import com.google.maps.errors.ApiException;
-import com.google.maps.errors.InvalidRequestException;
-import com.google.maps.errors.NotFoundException;
-import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResult;
-import de.westnordost.osmapi.*;
-import de.westnordost.osmapi.map.MapDataDao;
-import de.westnordost.osmapi.map.data.BoundingBox;
-import de.westnordost.osmapi.map.handler.DefaultMapDataHandler;
 
 public class Gui {
     private final MyFrame frame; 
@@ -88,6 +73,7 @@ public class Gui {
                             );
                     System.out.println("CHECCKA1 QUI-->" + results.first);
                     ImageResult geoImageRes = Gui.this.mapsHandler.getGeoImageAtCoordinates(results.second);
+                    
                     Gui.this.drawLocations.setResults(results, geoImageRes);  
                     System.out.println("CHECCKA2 QUI-->" + results.first);
                     
