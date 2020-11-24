@@ -5,10 +5,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -85,25 +83,21 @@ public class DrawLocationsPanel extends JPanel {
             
             final int distanceFromMyPosition = (int) (distanceInMeter / realWidthInMeterPerPixel);
             final double angleFromMyPosition = this.calculateAngleFromCoordinate(this.myPosition, res.geometry.location) + 90;
-            final double m = Math.tan(angleFromMyPosition);
-            
-            System.out.println("LOCATION = " + res.name + " - Distance = " + distanceInMeter + " mt - Angle = " + m);
-            
-            LatLng whereToPlaceLocationOnPanel = calculateVectorDifference(myCoordinates, res.geometry.location);
+
+            final double incrementX = Math.cos(Math.toRadians(angleFromMyPosition)) * distanceFromMyPosition;
+            final double incrementY = Math.sin(Math.toRadians(angleFromMyPosition)) * distanceFromMyPosition;
             
             
+            System.out.println("LOCATION = " + res.name + " - Distance = " + distanceInMeter + " mt - Angle = ");
+            
+            //LatLng whereToPlaceLocationOnPanel = calculateVectorDifference(myCoordinates, res.geometry.location);
+            
+            System.out.println(res.name + " " + " angle->" + angleFromMyPosition);
             Point actualLocationPositionRelativeToScreen = new Point(
-                    (int)((this.CentralPoint.x - (whereToPlaceLocationOnPanel.lng))),
-                    (int)((this.CentralPoint.y - (whereToPlaceLocationOnPanel.lat)))
+                    (int)((this.CentralPoint.x + incrementX)),
+                    (int)((this.CentralPoint.y - incrementY))
                     );
-            /*
-            Dimension scaledPointCoordinatesComparedToImage = this.getScaledDimension(
-                    new Dimension(
-                            actualLocationPositionRelativeToScreen.x,
-                            actualLocationPositionRelativeToScreen.y),
-                    scaledImageDimension
-                    );
-            */
+            
             g2d.setColor(DrawLocationsPanel.DEFAULT_NODE_COLOR);
             g2d.fillOval(
                     actualLocationPositionRelativeToScreen.x,
@@ -156,13 +150,7 @@ public class DrawLocationsPanel extends JPanel {
 
         return brng;
     }
-    
-    private LatLng calculateVectorDifference(final Point pivotLocation, final LatLng C2) {
-        return new LatLng(
-                (int)( (-pivotLocation.y) + transformedCoordinates(C2).y), //La latitudine sono le Y la long le X 
-                (int)((pivotLocation.x) - transformedCoordinates(C2).x));
-    }
-    
+
     /**
      * 
      * @param C1 is the coordinate pair to transform to a number useful to be put on screen whith coordinates
