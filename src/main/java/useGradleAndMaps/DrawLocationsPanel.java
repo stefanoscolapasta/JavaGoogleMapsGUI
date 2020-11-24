@@ -1,6 +1,5 @@
 package useGradleAndMaps;
 
-import org.gavaghan.geodesy.*;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
