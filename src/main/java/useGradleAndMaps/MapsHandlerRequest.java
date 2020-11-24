@@ -25,11 +25,14 @@ import com.google.maps.model.TravelMode;
 public class MapsHandlerRequest{
     
     private static GeoApiContext context;
+
+    public static int DEFAULT_ZOOM = 15;
     private static int FROM_M_TO_KM = 1000;
     private static int SIZE_W_REQUEST = 1920;
     private static int SIZE_H_REQUEST = 1080;
-    private final int imageScaleValue = 15;
+    private int zoom = DEFAULT_ZOOM;
     private final Size imageSize = new Size(SIZE_W_REQUEST, SIZE_H_REQUEST); 
+
     
     public MapsHandlerRequest() throws ApiException, InterruptedException {
         try {
@@ -37,6 +40,13 @@ public class MapsHandlerRequest{
         } catch (IOException e) {
             e.printStackTrace();
         }    
+    }
+    
+    public int getZoom() {
+        return this.zoom;
+    }
+    public void setZoom(int zoomValue) {
+        this.zoom = zoomValue;
     }
     
     public String getDistance(final String origin, final String destination) throws NotFoundException, ApiException, InterruptedException, IOException, NoSuchElementException {
@@ -83,14 +93,14 @@ public class MapsHandlerRequest{
         return StaticMapsApi
                 .newRequest(context, this.imageSize)
                 .center(locationLatLang)
-                .zoom(this.imageScaleValue)
+                .zoom(this.zoom)
                 .scale(6)
                 .maptype(StaticMapType.satellite)
                 .await();    
     }
     
     public int getImageScaleValue() {
-        return this.imageScaleValue;
+        return this.zoom;
     }
     
 }

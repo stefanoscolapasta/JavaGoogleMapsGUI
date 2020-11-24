@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -93,6 +95,25 @@ public class Gui {
             } catch (IOException a) {
                 // TODO Auto-generated catch block
                 a.printStackTrace();
+            }
+        });
+
+        this.drawLocations.addMouseWheelListener(new MouseWheelListener() {
+            
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                // TODO Auto-generated method stub
+                double change = e.getPreciseWheelRotation();
+                if (change < 0) {
+                    mapsHandler.setZoom(mapsHandler.getZoom() + 1);
+                    System.out.println("Zoom In");
+                }else {
+                    mapsHandler.setZoom(mapsHandler.getZoom() - 1);
+                    System.out.println("Zoom Out");
+                }
+                
+                Gui.this.drawLocations.refreshImage();
+                Gui.this.drawLocations.repaint();
             }
         });
 

@@ -41,12 +41,26 @@ public class DrawLocationsPanel extends JPanel {
     private final int FULL_CIRCLE = 360;
     private List<Place> places = new ArrayList<>();
     private Place myPosition;
-    private double imageSideInMeters;   
+
+    private double realWidthInMeterPerPixel;
+    private double realHeightInMeterPerPixel;
+
+    private double imageSideInMeters = (40_000 / Math.pow(2, MapsHandlerRequest.DEFAULT_ZOOM)) * 2 * 1_000;;   
     private double metersPerPixel;
 
     public DrawLocationsPanel(MapsHandlerRequest maps) {
         this.maps = maps;
     }
+
+    public void refreshImage() {
+        try {
+            this.backgroundImage = new ImageIcon(this.maps.getGeoImageAtCoordinates(this.myPosition.getPosition()).imageData);
+            this.imageSideInMeters = (40_000 / Math.pow(2, this.maps.getZoom())) * 2 * 1_000;
+        } catch (ApiException | InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /*
      * @param results is used to create some ADT to handle single coordinates
      * @param geoImageRes is the image we request the API for and is here handled to
@@ -54,8 +68,10 @@ public class DrawLocationsPanel extends JPanel {
      * */
     public void setResults(Pair<List<PlacesSearchResult>, LatLng> results, ImageResult geoImageRes, int imageScaleValue) {
         this.imageSideInMeters = (40_000 / Math.pow(2, imageScaleValue)) * 2 * 1_000;
-        this.backgroundImage = new ImageIcon(geoImageRes.imageData);
         this.myPosition = new Place(null, results.second, 0.0, 0.0);
+        this.refreshImage();
+        
+        this.refreshImage();
         this.places = new ArrayList<>();
       
         results.first.forEach(elem -> {
