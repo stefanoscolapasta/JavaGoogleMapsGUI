@@ -88,27 +88,7 @@ public class DrawLocationsPanel extends JPanel {
       
         for(PlacesSearchResult res : this.results) {
             
-            List<EncodedPolyline> encodedPolys = new ArrayList<>();
             
-            try {
-                final DirectionsResult req = this.handler.getPath(this.myPosition, res.geometry.location).await();
-                List<DirectionsRoute> listRoutes = Arrays.asList(req.routes);
-                List<DirectionsLeg> listLegs = new ArrayList<>();
-                listRoutes.stream().forEach(i -> listLegs.addAll(Arrays.asList(i.legs)));
-                
-                List<DirectionsStep> listSteps = new ArrayList<>();
-                listLegs.forEach(i -> listSteps.addAll(Arrays.asList(i.steps)));
-                
-                listSteps.forEach(i -> encodedPolys.addAll(Arrays.asList(i.polyline)));
-                
-                //list.stream().forEach(i -> System.out.println(i.));
-            } catch (ApiException | InterruptedException | IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            
-            //QUA DENTRO CI SONO LE COORDINATE DI TUTTI I PUNTI DEL PATH!!!
-            encodedPolys.forEach(i -> System.out.print(" " + i.decodePath()));
             
             final double distanceInMeter = this.calculateDistanceInMeter(this.myPosition, res.geometry.location);
             
