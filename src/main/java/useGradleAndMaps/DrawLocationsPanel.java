@@ -41,6 +41,7 @@ public class DrawLocationsPanel extends JPanel {
     private final static Color DEFAULT_NODE_COLOR = Color.RED;
     private final static Color DEFAULT_LINE_COLOR = Color.ORANGE;
     private final static Color DEFAULT_STRING_COLOR = Color.WHITE;
+    private final static Color DEFAULT_PATH_HOVER_COLOR = Color.CYAN;
     private ImageIcon backgroundImage = new ImageIcon();
     private MapsHandlerRequest maps;
 
@@ -56,52 +57,17 @@ public class DrawLocationsPanel extends JPanel {
     }
 
     public void setResults(Pair<List<PlacesSearchResult>, LatLng> results, ImageResult geoImageRes) {
-        this.results = results.first;
         this.backgroundImage = new ImageIcon(geoImageRes.imageData);
-
-        this.places = new ArrayList<>();
-        results.first.forEach(elem -> {
-            places.add(new Place(elem, elem.geometry.location, 0.0, 0.0));
-        });
-
         this.myPosition = new Place(null, results.second, 0.0, 0.0);
-    }
-
-    public void paint(final Graphics g) {
-
-        super.paintComponent(g);
-
-        Graphics2D g2d = (Graphics2D) g;
-
-        Dimension scaledImageDimension = this.getScaledDimension(
-                new Dimension(this.backgroundImage.getIconWidth(), this.backgroundImage.getIconHeight()),
-                this.getSize());
-
-        realWidthInMeterPerPixel = this.widthInMeter / (double) scaledImageDimension.width;
-        realHeightInMeterPerPixel = this.heightInMeter / (double) scaledImageDimension.height;
-
-        if (this.places.size() > 0) {
-
-            this.myPosition.setX(this.getSize().getWidth() / 2);
-            this.myPosition.setY(this.getSize().getHeight() / 2);
-
-            this.CentralPoint = new Point(this.myPosition.getX().intValue(), this.myPosition.getY().intValue());
-
-            g2d.drawImage(this.backgroundImage.getImage(), (int) (myPosition.getX() - (scaledImageDimension.width / 2)),
-                    (int) (myPosition.getY() - (scaledImageDimension.height / 2)), scaledImageDimension.width,
-                    scaledImageDimension.height, null);
-            
-            g2d.setColor(DrawLocationsPanel.DEFAULT_STRING_COLOR);
-            g2d.drawString("YOU ARE HERE", CentralPoint.x, CentralPoint.y);
-
-        }
-
-        this.places.forEach(res -> {
+        this.places = new ArrayList<>();
+      
+        results.first.forEach(elem -> {
+            Place p = new Place(elem, elem.geometry.location, 0.0, 0.0);
             
             List<EncodedPolyline> encodedPolys = new ArrayList<>();
             
             try {
-                final DirectionsResult req = this.maps.getPath(this.myPosition.getPosition(), res.getPosition()).await();
+                final DirectionsResult req = this.maps.getPath(this.myPosition.getPosition(), elem.geometry.location).await();
                 List<DirectionsRoute> listRoutes = Arrays.asList(req.routes);
                 List<DirectionsLeg> listLegs = new ArrayList<>();
                 listRoutes.stream().forEach(i -> listLegs.addAll(Arrays.asList(i.legs)));
@@ -117,11 +83,54 @@ public class DrawLocationsPanel extends JPanel {
                 e.printStackTrace();
             }
             
+            
             //QUA DENTRO CI SONO LE COORDINATE DI TUTTI I PUNTI DEL PATH!!!
             encodedPolys.forEach(i -> System.out.print(" " + i.decodePath()));
+            List<LatLng> pathLatLng = new ArrayList<>();  
+            encodedPolys.forEach(i -> pathLatLng.addAll(i.decodePath()));
+            System.out.println("Destination--> "+ elem.name + " PATH--> " + pathLatLng.toString());
+            p.setPath(pathLatLng);
+            this.places.add(p);
+        });
+    }
+
+    public void paint(final Graphics g) {
+
+        super.paintComponent(g);
+
+        Graphics2D g2d = (Graphics2D) g;
+
+        Dimension scaledImageDimension = this.getScaledDimension(
+                new Dimension(this.backgroundImage.getIconWidth(), this.backgroundImage.getIconHeight()),
+                this.getSize());
+
+        realWidthInMeterPerPixel = this.widthInMeter / (double) scaledImageDimension.width;
+        realHeightInMeterPerPixel = this.heightInMeter / (double) scaledImageDimension.height;
+
+        //Here we handle the central point
+        if (this.places.size() > 0) {
+            this.myPosition.setX(this.getSize().getWidth() / 2);
+            this.myPosition.setY(this.getSize().getHeight() / 2);
+
+            this.CentralPoint = new Point(this.myPosition.getX().intValue(), this.myPosition.getY().intValue());
+
+            g2d.drawImage(this.backgroundImage.getImage(), (int) (myPosition.getX() - (scaledImageDimension.width / 2)),
+                    (int) (myPosition.getY() - (scaledImageDimension.height / 2)), scaledImageDimension.width,
+                    scaledImageDimension.height, null);
+            
+            g2d.setColor(DrawLocationsPanel.DEFAULT_STRING_COLOR);
+            g2d.drawString("YOU ARE HERE", CentralPoint.x, CentralPoint.y);
+
+        }
+        
+        //Here we handle destination points and paths/lines
+        
+        
+        
+        this.places.forEach(res -> {            
             
             Pair<Double, Double> increment = this.getPointsFromCoordinate(this.myPosition.getPosition(), res.getPosition());
-
+    
             Point actualLocationPositionRelativeToScreen = new Point((int) (this.CentralPoint.x + increment.first),
                     (int) (this.CentralPoint.y - increment.second));
             
@@ -138,16 +147,55 @@ public class DrawLocationsPanel extends JPanel {
 
             g2d.setStroke(new BasicStroke(res.getSize() / 5 ));
             g2d.setColor(DrawLocationsPanel.DEFAULT_LINE_COLOR);
-            g2d.drawLine(CentralPoint.x, CentralPoint.y, actualLocationPositionRelativeToScreen.x + (res.getSize() / 2),
-                   actualLocationPositionRelativeToScreen.y + (res.getSize() / 2));
+            
+            
+//            g2d.drawLine(CentralPoint.x, CentralPoint.y, actualLocationPositionRelativeToScreen.x + (res.getSize() / 2),
+//                   actualLocationPositionRelativeToScreen.y + (res.getSize() / 2));
             
             
             
             g2d.setColor(DrawLocationsPanel.DEFAULT_STRING_COLOR);            
             
             g2d.setFont(new Font("Default", 0, res.getSize()));            
-            g2d.drawString(res.getPlace().name, actualLocationPositionRelativeToScreen.x,
-                    actualLocationPositionRelativeToScreen.y);
+            g2d.drawString(
+                    res.getPlace().name,
+                    actualLocationPositionRelativeToScreen.x,
+                    actualLocationPositionRelativeToScreen.y
+                    );
+            
+            if(res.getSize() == Place.HOVER_SIZE) {
+                g2d.setColor(DEFAULT_PATH_HOVER_COLOR);
+            }else {
+                g2d.setColor(DEFAULT_LINE_COLOR);
+            }
+            
+            Point prevPointForPath = new Point(this.myPosition.getX().intValue(), this.myPosition.getY().intValue());
+            
+            for(LatLng pointCoordinates : res.getPath()) {
+                Pair<Double, Double> singlePointIncrement = this.getPointsFromCoordinate(this.myPosition.getPosition(), pointCoordinates);
+                
+                Point singlePointActualLocationPositionRelativeToImage = new Point(
+                        (int) (this.myPosition.getX() + singlePointIncrement.first),
+                        (int) (this.myPosition.getY() - singlePointIncrement.second)
+                        );
+                
+                g2d.drawLine(
+                        prevPointForPath.x,
+                        prevPointForPath.y,
+                        singlePointActualLocationPositionRelativeToImage.x, 
+                        singlePointActualLocationPositionRelativeToImage.y
+                        );      
+                
+                prevPointForPath = singlePointActualLocationPositionRelativeToImage;  
+            }
+            
+            g2d.drawLine(
+                    prevPointForPath.x,
+                    prevPointForPath.y,
+                    actualLocationPositionRelativeToScreen.x, 
+                    actualLocationPositionRelativeToScreen.y
+                    );
+            
             
             res.setSize(Place.DEFAULT_SIZE);
             

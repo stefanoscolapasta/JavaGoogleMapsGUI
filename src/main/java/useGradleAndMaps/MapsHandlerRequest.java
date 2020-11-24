@@ -14,6 +14,7 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.ImageResult;
 import com.google.maps.NearbySearchRequest;
 import com.google.maps.StaticMapsApi;
+import com.google.maps.StaticMapsRequest.Markers;
 import com.google.maps.StaticMapsRequest.StaticMapType;
 import com.google.maps.errors.ApiException;
 import com.google.maps.errors.NotFoundException;
@@ -88,7 +89,6 @@ public class MapsHandlerRequest{
                 .zoom(15)
                 .scale(5)
                 .maptype(StaticMapType.satellite)
-                .markers(null)
                 .await();
        
         

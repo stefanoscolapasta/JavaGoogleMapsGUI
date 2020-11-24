@@ -1,6 +1,8 @@
 package useGradleAndMaps;
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResult;
@@ -17,8 +19,9 @@ public class Place {
     
     private LatLng coordinates;
     private Place basic;
+    private List<LatLng> pathLatLng = new ArrayList<>();
     
-    
+  
     Place(PlacesSearchResult place, LatLng coordinates, Double x, Double y){
         this.place = place;
         this.coordinates = coordinates;
@@ -39,6 +42,9 @@ public class Place {
         this.size = size;
     }
     
+    public void setPath(List<LatLng> paths) {
+        this.pathLatLng = paths;
+    }
     
     public Double getX() {
         return this.x;
@@ -48,6 +54,10 @@ public class Place {
     }
     public int getSize() {
         return this.size;
+    }
+    
+    public List<LatLng> getPath(){
+        return this.pathLatLng;
     }
     
     public PlacesSearchResult getPlace() {
