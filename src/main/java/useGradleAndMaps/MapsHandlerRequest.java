@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import org.slf4j.Marker;
-
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -14,7 +11,6 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.ImageResult;
 import com.google.maps.NearbySearchRequest;
 import com.google.maps.StaticMapsApi;
-import com.google.maps.StaticMapsRequest.Markers;
 import com.google.maps.StaticMapsRequest.StaticMapType;
 import com.google.maps.errors.ApiException;
 import com.google.maps.errors.NotFoundException;
@@ -29,20 +25,21 @@ import com.google.maps.model.TravelMode;
 public class MapsHandlerRequest{
     
     private static GeoApiContext context;
-    private static int FROM_M_TOKM = 1000;
-    private static int SIZE_W_REQUEST = 720;
-    private static int SIZE_H_REQUEST = 480;
+
     public static int DEFAULT_ZOOM = 15;
-    
+    private static int FROM_M_TO_KM = 1000;
+    private static int SIZE_W_REQUEST = 1920;
+    private static int SIZE_H_REQUEST = 1080;
     private int zoom = DEFAULT_ZOOM;
+    private final Size imageSize = new Size(SIZE_W_REQUEST, SIZE_H_REQUEST); 
+
     
-    public MapsHandlerRequest() throws ApiException, InterruptedException, IOException {
+    public MapsHandlerRequest() throws ApiException, InterruptedException {
         try {
             MapsHandlerRequest.context = new GeoApiContext.Builder().apiKey(new ApiKey().getApiKey()).build();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        
+        }    
     }
     
     public int getZoom() {
@@ -81,7 +78,7 @@ public class MapsHandlerRequest{
         System.out.println("YOUR LOCATION--->" + locationLatLang);
         PlacesSearchResponse req = new NearbySearchRequest(context)
                 .location(locationLatLang)
-                .radius(radius*MapsHandlerRequest.FROM_M_TOKM)
+                .radius(radius*MapsHandlerRequest.FROM_M_TO_KM)
                 .keyword(query)
                 .await();
         List<PlacesSearchResult> results = Arrays.asList(req.results);
@@ -94,13 +91,16 @@ public class MapsHandlerRequest{
     
     public ImageResult getGeoImageAtCoordinates(final LatLng locationLatLang) throws ApiException, InterruptedException, IOException {
         return StaticMapsApi
-                .newRequest(context, new Size(SIZE_W_REQUEST, SIZE_H_REQUEST))
+                .newRequest(context, this.imageSize)
                 .center(locationLatLang)
                 .zoom(this.zoom)
-                .scale(5)
+                .scale(6)
                 .maptype(StaticMapType.satellite)
-                .await();
-      
+                .await();    
+    }
+    
+    public int getImageScaleValue() {
+        return this.zoom;
     }
     
 }

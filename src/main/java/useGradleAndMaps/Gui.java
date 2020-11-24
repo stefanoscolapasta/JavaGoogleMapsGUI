@@ -2,10 +2,7 @@ package useGradleAndMaps;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -73,14 +70,14 @@ public class Gui {
         this.tGetNear = new JButton("Get near locations");
         this.pMain.add(this.drawLocations, BorderLayout.CENTER);
         this.tGetNear.addActionListener(e -> {
-          
+
             try {
                 Pair<List<PlacesSearchResult>, LatLng> results = Gui.this.mapsHandler.getTimeTravel(
                         Gui.this.tOrigin.getText(), Gui.this.tDestination.getText(),
                         Integer.valueOf(Gui.this.tDistance.getText()));
                 System.out.println("CHECCKA1 QUI-->" + results.first);
                 ImageResult geoImageRes = Gui.this.mapsHandler.getGeoImageAtCoordinates(results.second);
-                Gui.this.drawLocations.setResults(results, geoImageRes);
+                Gui.this.drawLocations.setResults(results, geoImageRes, Gui.this.mapsHandler.getImageScaleValue());
                 System.out.println("CHECCKA2 QUI-->" + results.first);
 
                 Gui.this.drawLocations.repaint();
@@ -90,14 +87,14 @@ public class Gui {
             } catch (InterruptedException a) {
                 // TODO Auto-generated catch block
                 a.printStackTrace();
-            } catch (IOException a) {
-                // TODO Auto-generated catch block
-                a.printStackTrace();
             } catch (NoSuchElementException a) {
                 // TODO Auto-generated catch block
                 Gui.this.showMapsError("Insert both origin and destination");
             } catch (NumberFormatException a) {
                 Gui.this.showMapsError("Insert a valid radius in km (<50)");
+            } catch (IOException a) {
+                // TODO Auto-generated catch block
+                a.printStackTrace();
             }
         });
 
@@ -121,34 +118,36 @@ public class Gui {
         });
 
         this.drawLocations.addMouseMotionListener(new MouseMotionListener() {
-            
+
             @Override
             public void mouseMoved(MouseEvent e) {
                 Place p = Gui.this.drawLocations.getPlaceNearPoint(e.getX(), e.getY());
-                
+
                 if (p != null) {
                     System.out.println(p.getPlace().name);
                     p.setSize(Place.HOVER_SIZE);
-                    
+
                 }
-                
+
                 Gui.this.drawLocations.repaint();
-                
-                
+
             }
-            
+
             @Override
             public void mouseDragged(MouseEvent e) {
-                
+
             }
         });
 
         this.pSearchPanel.add(this.tGetNear);
+        this.pSearchPanel.revalidate();
+        this.pTextPanel.revalidate();
         this.pMain.add(this.pTextPanel, BorderLayout.NORTH);
         this.pMain.add(this.pSearchPanel, BorderLayout.SOUTH);
+        this.pMain.revalidate();
         this.frame.add(this.pMain);
-        this.frame.revalidate();
         this.frame.refresh();
+        this.frame.revalidate();
     }
 
     private void showMapsError(String message) {

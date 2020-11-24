@@ -15,7 +15,7 @@ public class MyFrame extends JFrame {
         final int sw = (int) screen.getWidth();
         final int sh = (int) screen.getHeight();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setResizable(false);
+        this.setResizable(true);
         this.setSize(sw / 2, sh / 2);
         this.setVisible(true);
     }
