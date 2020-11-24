@@ -8,19 +8,24 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.DirectionsApiRequest.Waypoint;
 import com.google.maps.ImageResult;
 import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DistanceMatrix;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.DirectionsStep;
+import com.google.maps.model.EncodedPolyline;
+import com.google.maps.model.GeocodedWaypoint;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResult;
 
@@ -100,6 +105,7 @@ public class DrawLocationsPanel extends JPanel {
             res.setX((double) actualLocationPositionRelativeToScreen.x);
             res.setY((double) actualLocationPositionRelativeToScreen.y);
             
+            //LatLng whereToPlaceLocationOnPanel = calculateVectorDifference(myCoordinates, res.geometry.location);
             
             g2d.setColor(DrawLocationsPanel.DEFAULT_NODE_COLOR);
             g2d.fillOval(actualLocationPositionRelativeToScreen.x, 

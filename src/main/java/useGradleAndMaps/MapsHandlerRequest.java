@@ -9,18 +9,18 @@ import org.slf4j.Marker;
 
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
-import com.google.maps.DistanceMatrixApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.ImageResult;
 import com.google.maps.NearbySearchRequest;
 import com.google.maps.StaticMapsApi;
-import com.google.maps.StaticMapsRequest.Markers;
+import com.google.maps.StaticMapsRequest;
 import com.google.maps.StaticMapsRequest.StaticMapType;
 import com.google.maps.errors.ApiException;
 import com.google.maps.errors.NotFoundException;
+import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DistanceMatrix;
+import com.google.maps.model.EncodedPolyline;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResponse;
@@ -32,6 +32,8 @@ public class MapsHandlerRequest{
     
     private static GeoApiContext context;
     private static int FROM_M_TOKM = 1000;
+    private static int SIZE_W_REQUEST = 1920;
+    private static int SIZE_H_REQUEST = 1920;
     
     public MapsHandlerRequest() throws ApiException, InterruptedException, IOException {
         try {
@@ -78,12 +80,16 @@ public class MapsHandlerRequest{
         return new Pair<>(results, locationLatLang);
     }
     
-    public ImageResult getGeoImageAtCoordinates(LatLng locationLatLang) throws ApiException, InterruptedException, IOException {
+    public DirectionsApiRequest getPath(final LatLng origin, final LatLng destination) {
+        return new DirectionsApiRequest(context).origin(origin).destination(destination); 
+    }
+    
+    public ImageResult getGeoImageAtCoordinates(final LatLng locationLatLang) throws ApiException, InterruptedException, IOException {
         return StaticMapsApi
-                .newRequest(context, new Size(1280, 720))
+                .newRequest(context, new Size(SIZE_W_REQUEST, SIZE_H_REQUEST))
                 .center(locationLatLang)
                 .zoom(15)
-                .scale(2)
+                .scale(5)
                 .maptype(StaticMapType.satellite)
                 .markers(null)
                 .await();
