@@ -30,8 +30,11 @@ public class MapsHandlerRequest{
     
     private static GeoApiContext context;
     private static int FROM_M_TOKM = 1000;
-    private static int SIZE_W_REQUEST = 1920;
-    private static int SIZE_H_REQUEST = 1920;
+    private static int SIZE_W_REQUEST = 720;
+    private static int SIZE_H_REQUEST = 480;
+    public static int DEFAULT_ZOOM = 15;
+    
+    private int zoom = DEFAULT_ZOOM;
     
     public MapsHandlerRequest() throws ApiException, InterruptedException, IOException {
         try {
@@ -40,6 +43,13 @@ public class MapsHandlerRequest{
             e.printStackTrace();
         }
         
+    }
+    
+    public int getZoom() {
+        return this.zoom;
+    }
+    public void setZoom(int zoomValue) {
+        this.zoom = zoomValue;
     }
     
     public String getDistance(final String origin, final String destination) throws NotFoundException, ApiException, InterruptedException, IOException, NoSuchElementException {
@@ -86,7 +96,7 @@ public class MapsHandlerRequest{
         return StaticMapsApi
                 .newRequest(context, new Size(SIZE_W_REQUEST, SIZE_H_REQUEST))
                 .center(locationLatLang)
-                .zoom(15)
+                .zoom(this.zoom)
                 .scale(5)
                 .maptype(StaticMapType.satellite)
                 .await();

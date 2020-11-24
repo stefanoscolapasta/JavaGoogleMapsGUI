@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -96,6 +98,25 @@ public class Gui {
                 Gui.this.showMapsError("Insert both origin and destination");
             } catch (NumberFormatException a) {
                 Gui.this.showMapsError("Insert a valid radius in km (<50)");
+            }
+        });
+
+        this.drawLocations.addMouseWheelListener(new MouseWheelListener() {
+            
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                // TODO Auto-generated method stub
+                double change = e.getPreciseWheelRotation();
+                if (change < 0) {
+                    mapsHandler.setZoom(mapsHandler.getZoom() + 1);
+                    System.out.println("Zoom In");
+                }else {
+                    mapsHandler.setZoom(mapsHandler.getZoom() - 1);
+                    System.out.println("Zoom Out");
+                }
+                
+                Gui.this.drawLocations.refreshImage();
+                Gui.this.drawLocations.repaint();
             }
         });
 

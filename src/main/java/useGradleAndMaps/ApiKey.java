@@ -7,9 +7,7 @@ import java.io.InputStreamReader;
 
 public class ApiKey {
     private String key = "Default";
-    private static final String FILE_NAME = "D:\\Stefano\\Documents\\Universita\\"
-            + "Anni-Scolastici\\SECONDO ANNO\\Corsi\\Programmazione ad Oggetti\\"
-            + "EclipseWorkSpace\\useGradleAndMaps\\JavaGoogleMapsGUI\\key.txt";
+    private static final String FILE_NAME = "/home/alessandro/Desktop/JavaGoogleMapsGUI/key.txt";
     
     public ApiKey() throws IOException {
         try(final BufferedReader r = new BufferedReader(

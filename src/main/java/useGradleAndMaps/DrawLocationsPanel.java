@@ -42,8 +42,8 @@ public class DrawLocationsPanel extends JPanel {
 
     private List<Place> places = new ArrayList<>();
     private Place myPosition;
-    private final double widthInMeter = (40_000 / Math.pow(2, 15)) * 2 * 1_000;
-    private final double heightInMeter = (40_000 / Math.pow(2, 15)) * 2 * 1_000;
+    private double widthInMeter = (40_000 / Math.pow(2, MapsHandlerRequest.DEFAULT_ZOOM)) * 2 * 1_000;
+    private double heightInMeter = (40_000 / Math.pow(2, MapsHandlerRequest.DEFAULT_ZOOM)) * 2 * 1_000;
     private double realWidthInMeterPerPixel;
     private double realHeightInMeterPerPixel;
 
@@ -51,9 +51,19 @@ public class DrawLocationsPanel extends JPanel {
         this.maps = maps;
     }
 
+    public void refreshImage() {
+        try {
+            this.backgroundImage = new ImageIcon(this.maps.getGeoImageAtCoordinates(this.myPosition.getPosition()).imageData);
+            this.widthInMeter = (40_000 / Math.pow(2, this.maps.getZoom())) * 2 * 1_000;
+            this.heightInMeter = (40_000 / Math.pow(2, this.maps.getZoom())) * 2 * 1_000;
+        } catch (ApiException | InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void setResults(Pair<List<PlacesSearchResult>, LatLng> results, ImageResult geoImageRes) {
-        this.backgroundImage = new ImageIcon(geoImageRes.imageData);
         this.myPosition = new Place(null, results.second, 0.0, 0.0);
+        
+        this.refreshImage();
         this.places = new ArrayList<>();
       
         results.first.forEach(elem -> {
