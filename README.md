@@ -1,4 +1,6 @@
-<p align="center"> # JavaGoogleMapsGUI </p>
+<p align="center"> 
+    # JavaGoogleMapsGUI
+</a>
 
 
 <!-- PROJECT LOGO -->
