@@ -6,7 +6,7 @@
   </a>
 
   <p align="left">
-    A GeoSpatial Java desktop application 
+    A geo-spatial data and information Java desktop application 
   </p>
 </p>
 
