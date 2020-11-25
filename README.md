@@ -38,9 +38,9 @@
 <!-- USAGE EXAMPLES -->
 ## Usage
 * UNTIL NOW YOU CAN:
-    * Enter an origin address 
-    * Enter something you wanto to look for near you
-    * The application will query Google Maps' API and return a map with all the possibile destination and their relative road path
+    * Enter an origin address.
+    * Enter something you want to look for near you.
+    * The application will query Google Maps' API and return a map image with all the possible destinations and their relative road path.
     ![](res/searchAndSeeRes_Trim.gif)
     * You can highlight a path by passing with the mouse on it's relative destination
     ![](res/HooverExample_1.gif)
@@ -49,6 +49,7 @@
 
 ## <br/>TODO
 - [ ] Add more options
+- [ ] Bug fixing
 - [ ] Improve performance
 - [ ] Improve UX and UI
 - [ ] Add some geo-mapping tools
