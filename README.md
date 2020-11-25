@@ -107,13 +107,3 @@ Contributions are what make the open source community such an amazing place to b
 - **[MIT license](http://opensource.org/licenses/mit-license.php)**
 
 
-<br/><br/> 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-url]: https://github.com/stefanoscolapasta/JavaGoogleMapsGUI/graphs/contributors
-[forks-url]: https://github.com/stefanoscolapasta/JavaGoogleMapsGUI/network/members
-[stars-url]: https://github.com/stefanoscolapasta/JavaGoogleMapsGUI/stargazers
-[issues-url]: https://github.com/stefanoscolapasta/JavaGoogleMapsGUI/issues
-[license-url]: http://opensource.org/licenses/mit-license.php
-[linkedin-url]: https://www.linkedin.com/in/stefano-scolari-7a9440170/
-
