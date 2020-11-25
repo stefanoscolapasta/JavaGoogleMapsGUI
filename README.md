@@ -1,4 +1,4 @@
-# JavaGoogleMapsGUI
+# Maps Visualization
 
 <br />
 <p left="left">
