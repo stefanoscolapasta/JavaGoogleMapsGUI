@@ -43,11 +43,11 @@
     * Enter an origin address 
     * Enter something you wanto to look for near you
     * The application will query Google Maps' API and return a map with all the possibile destination and their relative road path
-    ![](https://github.com/stefanoscolapasta/JavaGoogleMapsGUI/tree/main/res/searchAndSeeRes_Trim.gif)
+    ![](res/searchAndSeeRes_Trim.gif)
     * You can highlight a path by passing with the mouse on it's relative destination
-    ![](https://github.com/stefanoscolapasta/JavaGoogleMapsGUI/tree/main/res/HooverExample_1.gif)
+    ![](res/HooverExample_1.gif)
     * Although zooming in and out is a thing, these have to be slightly bug-fixed
-    ![](https://github.com/stefanoscolapasta/JavaGoogleMapsGUI/tree/main/res/ZoomOut_1.gif)
+    ![](res/ZoomOut_1.gif)
 
 ## <br/>TODO
 - [ ] Add more options
