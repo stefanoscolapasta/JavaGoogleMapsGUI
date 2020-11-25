@@ -1,11 +1,11 @@
 # JavaGoogleMapsGUI
 
 <br />
-<p left="center">
+<p left="left">
     <img src="res/GoogleMapsApiLogo.png" alt="Logo" width="500" height="500">
   </a>
 
-  <p align="center">
+  <p align="left">
     A GeoSpatial Java desktop application 
   </p>
 </p>
