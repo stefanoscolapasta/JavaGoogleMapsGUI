@@ -28,9 +28,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](res/GoogleMapsLogo.png)
-
-We are trying to create an Open-Source Desktop application to **handle and process Google Maps' API geo-spatial data**.
+* We are trying to create an Open-Source Desktop application to **handle and process Google Maps' API geo-spatial data**.
 
 
 ### Built With
