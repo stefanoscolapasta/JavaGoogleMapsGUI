@@ -5,8 +5,6 @@
     <img src="res/GoogleMapsApiLogo.png" alt="Logo" width="800" height="800">
   </a>
 
-  <h3 align="center">JavaGoogleMapsGUI</h3>
-
   <p align="center">
     A GeoSpatial Java desktop application 
   </p>
