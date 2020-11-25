@@ -50,7 +50,7 @@
 ## <br/>TODO
 - [ ] Add more options
 - [ ] Bug fixing
-- [ ] Improve performance
+- [ ] Improve performances
 - [ ] Improve UX and UI
 - [ ] Add some geo-mapping tools
 - [ ] ...
