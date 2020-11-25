@@ -1,9 +1,5 @@
-<p align="center"> 
-    # JavaGoogleMapsGUI
-</a>
+# JavaGoogleMapsGUI
 
-
-<!-- PROJECT LOGO -->
 <br />
 <p align="center">
     <img src="res/GoogleMapsApiLogo.png" alt="Logo" width="800" height="800">
