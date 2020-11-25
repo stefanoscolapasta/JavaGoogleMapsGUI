@@ -39,8 +39,24 @@
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+* UNTIL NOW YOU CAN:
+    * Enter an origin address 
+    * Enter something you wanto to look for near you
+    * The application will query Google Maps' API and return a map with all the possibile destination and their relative road path
+    ![](res/searchAndSeeRes_Trim.gif)
+    </br>
+    * You can highlight a path by passing with the mouse on it's relative destination
+    ![](res/HooverExample_1.gif)
+    </br>
+    * Although zooming in and out is a thing, these have to be slightly bug-fixed
+    ![](res/ZoomOut_1.gif)
 
-
+## <br/>TODO
+- [ ] Add more options
+- [ ] Improve performance
+- [ ] Improve UX and UI
+- [ ] Add some geo-mapping tools
+- [ ] ...
 
 <!-- CONTRIBUTING -->
 ## Contributing
