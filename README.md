@@ -2,7 +2,7 @@
 
 <br />
 <p align="center">
-    <img src="res/GoogleMapsApiLogo.png" alt="Logo" width="800" height="800">
+    <img src="res/GoogleMapsApiLogo.png" alt="Logo" width="500" height="500">
   </a>
 
   <p align="center">
