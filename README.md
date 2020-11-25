@@ -43,12 +43,15 @@
     * Enter an origin address 
     * Enter something you wanto to look for near you
     * The application will query Google Maps' API and return a map with all the possibile destination and their relative road path
+    </br>
     ![](res/searchAndSeeRes_Trim.gif)
     </br>
     * You can highlight a path by passing with the mouse on it's relative destination
+    </br>
     ![](res/HooverExample_1.gif)
     </br>
     * Although zooming in and out is a thing, these have to be slightly bug-fixed
+    </br>
     ![](res/ZoomOut_1.gif)
 
 ## <br/>TODO
