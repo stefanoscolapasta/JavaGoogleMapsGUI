@@ -31,10 +31,10 @@
 <br />
 <p align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="res/GoogleMapsApiLogo.png" alt="Logo" width="80" height="80">
+    <img src="res/GoogleMapsApiLogo.png" alt="Logo" width="800" height="800">
   </a>
 
-  <h3 align="center">Best-README-Template</h3>
+  <h3 align="center">JavaGoogleMapsGUI</h3>
 
   <p align="center">
     An awesome README template to jumpstart your projects!
