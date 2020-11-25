@@ -1,7 +1,7 @@
 # JavaGoogleMapsGUI
 
 <br />
-<p align="center">
+<p left="center">
     <img src="res/GoogleMapsApiLogo.png" alt="Logo" width="500" height="500">
   </a>
 
